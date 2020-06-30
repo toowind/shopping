@@ -1,0 +1,181 @@
+<extend name="Public/base"/>
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	<div class="cf">
+		<form class="layui-form layui-form-pane" id="search_form" action="{:u('index')}">
+			<div class="layui-form-item" style="margin-bottom:0px">
+				<div class="layui-inline">
+					<button type="button" class="layui-btn layui-btn-normal" onclick="window.location.href='{:U("add")}'">添加专题</button>
+				</div>
+			</div>
+
+			<div class="search-form fr cf">
+				<div class="layui-inline">
+					<label class="layui-form-label">专题名称</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keyword" value="{$keyword}" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">状态</label>
+					<div class="layui-input-inline">
+						<select name="status"  lay-search="">
+							<option value="1" <if condition="($status eq '1')">selected</if>>已上线</option>
+							<option value="2" <if condition="($status eq '2')">selected</if>>已下架</option>
+						</select>
+					</div>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+				</div>
+			</div>
+
+
+		</form>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+	<!-- 数据列表 -->
+	<div class="data-table">
+		<div class="data-table table-striped">
+			<table>
+				<!-- 表头 -->
+				<thead>
+				<tr>
+					<th style="text-align: center;" class="row-selected">
+						<input class="checkbox check-all" type="checkbox" style="width:17px;height:17px;margin-top: 10px">
+					</th>
+					<th style="text-align: center;">ID</th>
+					<th style="text-align: center;">专题名称</th>
+					<th style="text-align: center;">活动时间</th>
+					<th style="text-align: center">添加时间</th>
+					<th style="text-align: center">状态</th>
+					<th style="text-align: center">操作</th>
+				</tr>
+				</thead>
+				<!-- 列表 -->
+				<tbody>
+				<notempty name="list">
+					<volist name="list" id="val" key="key">
+						<tr style="height:100px">
+							<td align="center" width="100">
+								<input class="ids row-selected" type="checkbox" name="ids" value="{$val.id}" style="width:17px;height:17px">
+							</td>
+							<td align="center" width="100">
+								{$val.id}
+							</td>
+							<td align="center" width="250">
+								{$val.name}
+							</td>
+							<td align="center" width="120">
+								<p>{$val.start_time}</p>
+								<p>-</p>
+								<p>{$val.end_time}</p>
+							</td>
+							<td align="center" width="150">
+								{$val['add_time']|date="Y-m-d H:i",###}
+							</td>
+							<td align="center" width="50">
+								<if condition="($val['status'] eq '1')">
+									已上线
+								<else/>
+									<span style="color:red">已下架</span>
+								</if>
+							</td>
+							<td align="center" width="160">
+								<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="edit" url="{:u('edit',array('id'=>$val['id']))}" title="编辑">&#xe642;</i>
+								<if condition="($val['status'] eq '1')">
+									<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="delete" url="{:u('del',array('ids'=>$val['id']))}" title="下架">&#x1006;</i>
+								<else/>
+									<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="grounding" url="{:u('grounding',array('ids'=>$val['id']))}" title="上架">&#xe654;</i>
+								</if>
+							</td>
+						</tr>
+					</volist>
+					<else/>
+					<td colspan="16" class="text-center">aOh! 暂时还没有内容!</td>
+				</notempty>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+        $(function () {
+            layui.use(['form', 'layer'], function () {
+                var layer = layui.layer;
+                var form = layui.form
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('index')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+            //编辑
+            $("[name='edit']").click(function(){
+                var url = $(this).attr("url");
+                window.location.href = url;
+            });
+            //上架
+            $("[name='grounding']").click(function(){
+                var url = $(this).attr("url");
+                var msg = "确定要上架当前专题吗?";
+                layer.confirm(msg,{icon:3,title:"上架专题",move:false},function(index){
+                    var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                    $.get(url,function(data){
+                        if(data.status){
+                            layer.closeAll();
+                            layer.msg(data.info,{icon:6},function(){
+                                location.reload(true);
+                            });
+                        }else{
+                            layer.msg(data.info,{icon:5});
+                        }
+                        layer.close(index);
+                    }, 'json');
+                });
+            });
+            //下架
+            $("[name='delete']").click(function(){
+                var url = $(this).attr("url");
+                var msg = "确定要下架当前专题吗?";
+                layer.confirm(msg,{icon:3,title:"下架专题",move:false},function(index){
+                    var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                    $.get(url,function(data){
+                        if(data.status){
+                            layer.closeAll();
+                            layer.msg(data.info,{icon:6},function(){
+                                location.reload(true);
+                            });
+                        }else{
+                            layer.msg(data.info,{icon:5});
+                        }
+                        layer.close(index);
+                    }, 'json');
+                });
+            });
+        })
+        //导航高亮
+        highlight_subnav("{:U('index')}");
+	</script>
+</block>

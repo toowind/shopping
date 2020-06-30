@@ -1,0 +1,192 @@
+<extend name="Public/base"/>
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	<div class="cf">
+		<form class="layui-form layui-form-pane" id="search_form" action="{:u('index')}">
+			<div class="layui-form-item" style="margin-bottom:0px">
+				<div class="layui-inline">
+					<button type="button" class="layui-btn layui-btn-normal" onclick="window.location.href='{:U("add")}'">添加类型</button>
+					<button type="button" class="layui-btn layui-btn-primary" name="setStatus" url="{:U('setStatus',array('status'=>1))}">批量启用</button>
+					<button type="button" class="layui-btn layui-btn-primary" name="setStatus" url="{:U('setStatus',array('status'=>0))}">批量禁用</button>
+				</div>
+			</div>
+
+			<div class="search-form fr cf">
+				<div class="layui-inline">
+					<label class="layui-form-label">类型名称</label>
+					<div class="layui-input-inline">
+						<input type="text" name="keyword" value="{$keyword}" autocomplete="off" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">状态</label>
+					<div class="layui-input-inline">
+						<select name="status"  lay-search="">
+							<option value="1" <if condition="($status eq '1')">selected</if>>已启用</option>
+							<option value="2" <if condition="($status eq '2')">selected</if>>已禁用</option>
+						</select>
+					</div>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+				</div>
+			</div>
+
+
+		</form>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+	<!-- 数据列表 -->
+	<div class="data-table">
+		<div class="data-table table-striped">
+			<table>
+				<!-- 表头 -->
+				<thead>
+				<tr>
+					<th style="text-align: center;" class="row-selected">
+						<input class="checkbox check-all" type="checkbox" style="width:17px;height:17px;margin-top: 10px">
+					</th>
+					<th style="text-align: center;">编号</th>
+					<th style="text-align: center;">类型名称</th>
+					<th style="text-align: center">规格数量</th>
+					<th style="text-align: center">属性数量</th>
+					<th style="text-align: center">添加时间</th>
+					<th style="text-align: center">状态</th>
+					<th style="text-align: center">操作</th>
+				</tr>
+				</thead>
+				<!-- 列表 -->
+				<tbody>
+				<notempty name="list">
+					<volist name="list" id="val" key="key">
+						<tr style="height:70px">
+							<td align="center" width="100">
+								<input class="ids row-selected" type="checkbox" name="ids" value="{$val.id}" style="width:17px;height:17px">
+							</td>
+							<td align="center" width="100">
+								{$val.id}
+							</td>
+							<td align="center" width="400">
+								{$val.name}
+							</td>
+							<td align="center" width="100">
+								{$val.format_num}
+							</td>
+							<td align="center" width="100">
+								{$val.attribute_num}
+							</td>
+							<td align="center" width="150">
+								{$val['add_time']|date="Y-m-d H:i",###}
+							</td>
+							</td>
+							<td align="center" width="50">
+								<img src="__IMG__/status_{$val.status}.jpg" >
+							</td>
+							<td align="center" width="160">
+								<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="edit" url="{:u('format',array('id'=>$val['id']))}" title="规格">&#xe63c;</i>
+								<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="edit" url="{:u('attribute',array('id'=>$val['id']))}" title="属性">&#xe621;</i>
+								<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="edit" url="{:u('edit',array('id'=>$val['id']))}" title="编辑">&#xe642;</i>
+								<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="delete" url="{:u('del',array('ids'=>$val['id']))}" title="删除">&#xe640;</i>
+							</td>
+						</tr>
+					</volist>
+					<else/>
+					<td colspan="16" class="text-center">aOh! 暂时还没有内容!</td>
+				</notempty>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+        $(function () {
+            layui.use(['form', 'layer'], function () {
+                var layer = layui.layer;
+                var form = layui.form
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('index')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+            //编辑
+            $("[name='edit']").click(function(){
+                var url = $(this).attr("url");
+                window.location.href = url;
+            });
+
+            //批量启用与批量禁用
+            $("[name='setStatus']").click(function(){
+                var ids = [];
+                var i = 0;
+                $(".ids").each(function(){
+                    if(this.checked){
+                        ids[i] = $(this).val();
+                        i++;
+                    }
+                });
+                if(!ids || ids == ""){
+                    layer.msg("请选择要操作的数据!",{icon:5,time:1000});
+                    return false;
+                }
+                var url = $(this).attr("url");
+                var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                $.get(url,{
+                    ids:ids
+                },function(data){
+                    if(data.status){
+                        layer.closeAll();
+                        layer.msg(data.info,{icon:6},function(){
+                            location.reload(true);
+                        });
+                    }else{
+                        layer.msg(data.info,{icon:5});
+                    }
+                    layer.close(index);
+                }, 'json');
+            });
+            //删除
+            $("[name='delete']").click(function(){
+                var url = $(this).attr("url");
+                var msg = "确定要删除当前类型吗?";
+                layer.confirm(msg,{icon:3,title:"删除类型",move:false},function(index){
+                    var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                    $.get(url,function(data){
+                        if(data.status){
+                            layer.closeAll();
+                            layer.msg(data.info,{icon:6},function(){
+                                location.reload(true);
+                            });
+                        }else{
+                            layer.msg(data.info,{icon:5});
+                        }
+                        layer.close(index);
+                    }, 'json');
+                });
+            });
+        })
+        //导航高亮
+        highlight_subnav("{:U('index')}");
+	</script>
+</block>

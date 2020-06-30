@@ -1,0 +1,39 @@
+<extend name="Public/base" />
+<block name="body">
+    <div class="main-title cf">
+        <h2>{$meta_title}</h2>
+    </div>
+    <!-- 标签页导航 -->
+    <div class="tab-content">
+        <!-- 表单 -->
+        <form id="form" action="{:U('edit',array('id'=>$info['id']))}" method="post" class="form-horizontal">
+            <div class="form-item">
+                <label class="item-label required">类型名称<span class="check-tips"></span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="name" value="{$info.name}">
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="item-label">类型状态<span class="check-tips"></span></label>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" value="1" name="status" <if condition="($info['status'] eq '1')">checked</if> >启用
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="0" name="status"  <if condition="($info['status'] eq '0')">checked</if> >禁用
+                    </label>
+                </div>
+            </div>
+            <div class="form-item cf">
+                <button class="btn submit-btn ajax-post hidden" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+                <a class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</a>
+            </div>
+        </form>
+    </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        highlight_subnav("{:U('index')}");
+    </script>
+</block>

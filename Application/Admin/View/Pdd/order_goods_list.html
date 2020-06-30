@@ -1,0 +1,144 @@
+<extend name="Public/base" />
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>{$meta_title}</h2>
+    </div>
+    <div  class="cf">
+        <form class="layui-form layui-form-pane" id="search_form" action="{:u('order_goods_list')}">
+            <div class="search-form fr cf">
+                <div class="layui-inline">
+                    <label class="layui-form-label">商品ID :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="goods_id"  value="{$goods_id}" autocomplete="on" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">排序规则 :  </label>
+                    <div class="layui-input-inline">
+                        <select name="sorting_rules" lay-search="">
+                            <volist name="SortingRules" id="v" key="k">
+                                <option value="{$k}" <if condition="($k eq $sorting)">selected</if>>  {$v}  </option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+    <div class="data-table table-striped">
+        <table class="">
+            <thead id="text_box">
+            <tr style="height:36px">
+                <th style="text-align: center;">商品id</th>
+                <th style="text-align: center;">商品名称</th>
+                <th style="text-align: center;">PV</th>
+                <th style="text-align: center;">UV</th>
+                <th style="text-align: center;">收藏总数</th>
+                <th style="text-align: center;">订单数</th>
+                <th style="text-align: center;">数据来源</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="_list">
+                <volist name="_list" id="val" key="key">
+                    <tr>
+                        <td align="center" width="120">
+                            {$val.goods_id}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.goods_name}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.pv}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.uv}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.num}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.order_num}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.platform}
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="12" class="text-center"> aOh! 暂时还没有内容! </td>
+            </notempty>
+            </tbody>
+        </table>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/laydate/laydate.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            //初始化日历和皮肤
+            // laydate.skin('molv');
+            // laydate({
+            //     elem: '#shopping_start_time',
+            //     event: 'focus',
+            //     max: laydate.now(),
+            //     istoday : false
+            // });
+            // laydate({
+            //     elem: '#shopping_end_time',
+            //     event: 'focus',
+            //     max: laydate.now(),
+            //     istoday : false
+            // });
+            // laydate({
+            //     elem: '#order_start_time',
+            //     event: 'focus',
+            //     max: laydate.now(),
+            //     istoday : false
+            // });
+            // laydate({
+            //     elem: '#order_end_time',
+            //     event: 'focus',
+            //     max: laydate.now(),
+            //     istoday : false
+            // });
+            layui.use(['form', 'layer','laydate'], function () {
+
+                var layer = layui.layer;
+                var form = layui.form;
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('Pdd/order_goods_list')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+
+        })
+        //导航高亮
+        highlight_subnav("{:U('Pdd/order_goods_list')}");
+    </script>
+</block>

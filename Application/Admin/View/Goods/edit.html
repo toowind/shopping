@@ -1,0 +1,628 @@
+<extend name="Public/base" />
+<block name="style">
+    <style type="text/css">
+        a.close-modal{position:absolute;top:-9px;right:1px;width:20px;height:20px;font-size:16px;line-height:18px;color:#fff;text-align:center;cursor:pointer;background:hsla(0,0%,60%,.6);border-radius:10px}
+        a.close-modal:hover{color:#fff;background:#000}.app-image-list li img{height:100%;width:100%}
+    </style>
+</block>
+<block name="body">
+    <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+    <div class="main-title cf">
+        <h2>{$meta_title}</h2>
+    </div>
+    <!-- 标签页导航 -->
+    <div class="tab-wrap">
+        <ul class="tab-nav nav">
+            <li data-tab="tab1" class="current"><a href="javascript:void(0);">商品信息</a></li>
+            <li data-tab="tab2"><a href="javascript:void(0);">属性信息</a></li>
+            <li data-tab="tab3"><a href="javascript:void(0);">商品详情</a></li>
+            <li data-tab="tab4"><a href="javascript:void(0);">其他信息</a></li>
+        </ul>
+        <div class="tab-content">
+            <!-- 表单 -->
+            <form id="form" action="{:U('edit',array('id'=>$info['id']))}" method="post" class="form-horizontal doc-modal-form">
+                <!-- 基础 -->
+                <div id="tab1" class="tab-pane in tab1">
+                    <div class="form-item">
+                        <label class="item-label required">商品名称<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <input type="text" class="text input-large" name="title" value="{$info.title}">
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label required">商品卖点<span class="check-tips">(在商品详情页标题下面展示卖点信息，建议60字以内)</span></label>
+                        <div class="controls">
+                            <input type="text" class="text input-large" name="selling_point" value="{$info.selling_point}">
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label">封面图</label>
+                        <div class="controls">
+                            <input type="file" id="upload_picture_image">
+                            <input type="hidden" name="thumb" id="cover_id_image" value="{$info.thumb}"/>
+                            <div class="upload-img-box">
+                                <div class="upload-pre-item"><a href="{$info.thumb}" target="_blank"><img src="{$info.thumb}"/></a></div>
+                            </div>
+                            <script type="text/javascript">
+                                //上传图片
+                                /* 初始化上传插件 */
+                                $("#upload_picture_image").uploadify({
+                                    "height"          : 30,
+                                    "swf"             : "__STATIC__/uploadify/uploadify.swf",
+                                    "fileObjName"     : "download",
+                                    "buttonText"      : "上传图片",
+                                    "uploader"        : "{:U('File/uploadQiniu',array('session_id'=>session_id(),'prefix'=>'cover'))}",
+                                    "width"           : 120,
+                                    'removeTimeout'   : 1,
+                                    'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+                                    "onUploadSuccess" : uploadPictureimage,
+                                    'onFallback' : function() {
+                                        alert('未检测到兼容版本的Flash.');
+                                    }
+                                });
+                                function uploadPictureimage(file, data){
+                                    var data = $.parseJSON(data);
+                                    var src = '';
+                                    if(data.status){
+                                        src = data.url || '__ROOT__' + data.path;
+                                        $("#cover_id_image").val(src);
+                                        $("#cover_id_image").parent().find('.upload-img-box').html(
+                                            '<div class="upload-pre-item"><a href="' + src + '" target="_blank"><img src="' + src + '"/></a></div>'
+                                        );
+                                    } else {
+                                        updateAlert(data.info);
+                                        setTimeout(function(){
+                                            $('#top-alert').find('button').click();
+                                        },1500);
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label">商品图</label>
+                        <div class="controls">
+                            <input type="file" id="upload_picture_image2">
+                            <div class="upload-img-box">
+                                <ul id="dragsort" style="margin-top: 15px;">
+                                    <volist name="info['images']" id="val">
+                                        <li class="getSort" style="float: left;padding-right: 10px;position: relative;">
+                                            <img src="{$val}" style="width:120px">
+                                            <a class="close-modal dragSelector">×</a>
+                                            <input type="hidden" name="images[]" value="{$val}"/>
+                                        </li>
+                                    </volist>
+                                </ul>
+                            </div>
+                            <script type="text/javascript">
+                                //上传图片
+                                /* 初始化上传插件 */
+                                $("#upload_picture_image2").uploadify({
+                                    "height"          : 30,
+                                    "swf"             : "__STATIC__/uploadify/uploadify.swf",
+                                    "fileObjName"     : "download",
+                                    "buttonText"      : "上传图片",
+                                    "uploader"        : "{:U('File/uploadQiniu',array('session_id'=>session_id(),'prefix'=>'cover'))}",
+                                    "width"           : 120,
+                                    'removeTimeout'   : 1,
+                                    'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+                                    "onUploadSuccess" : uploadPictureimage2,
+                                    'onFallback' : function() {
+                                        alert('未检测到兼容版本的Flash.');
+                                    }
+                                });
+                                function uploadPictureimage2(file, data){
+                                    var data = $.parseJSON(data);
+                                    var src = '';
+                                    if(data.status){
+                                        src = data.url || '__ROOT__' + data.path;
+                                        $("#dragsort").append('<li class="getSort" style="float: left;padding-right: 10px;;position: relative;"><img src="' + src + '" style="width:120px"><a class="close-modal dragSelector">×</a><input type="hidden" name="images[]" value="' + src + '"/></li>');
+                                    } else {
+                                        updateAlert(data.info);
+                                        setTimeout(function(){
+                                            $('#top-alert').find('button').click();
+                                        },1500);
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label">一级分类<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <select name="catid_one" id="catid_one">
+                                <option value="0">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label">二级分类<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <select name="catid_two" id="catid_two">
+                                <option value="0">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label">三级分类<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <select name="catid_three" id="catid_three">
+                                <option value="0">请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab2" class="tab-pane tab2">
+                    <div class="form-item">
+                        <label class="item-label">选择类型<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <select name="type" id="type">
+                                <option value="0">请选择</option>
+                                <volist name="types" id="val">
+                                    <option value="{$val.id}" <if condition="($info['type_id'] eq $val['id'])">selected</if>>{$val.name}</option>
+                                </volist>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-item" >
+                        <label class="item-label">选择规格</label>
+                        <div class="controls" id="format_area">
+                        </div>
+                    </div>
+                    <div class="form-item" >
+                        <label class="item-label">规格参数</label>
+                        <div class="controls" >
+                            <table class="layui-table" style="width: 70%">
+                                <colgroup>
+                                    <col width="50">
+                                    <col width="200">
+                                </colgroup>
+                                <thead>
+                                </thead>
+                                <tbody id="format_param_area">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-item" >
+                        <label class="item-label">规格明细</label>
+                        <div class="controls" >
+                            <table class="layui-table" style="width: 70%">
+                                <thead>
+                                <tr id="param_top"></tr>
+                                </thead>
+                                <thead>
+                                </thead>
+                                <tbody id="format_param_area2">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label required">划线价<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <input type="text" class="text input-mid" name="line_price" value="{$info.line_price}">
+                        </div>
+                    </div>
+                </div>
+                <div id="tab3" class="tab-pane tab3">
+                    <label class="item-label required">详情<span class="check-tips"></span></label>
+                    <div class="controls" style="width: 1000px;display: block;">
+                        <textarea  name="content"  id="content">{$info.content}</textarea>
+                    </div>
+                </div>
+                <!-- 其他 -->
+                <div id="tab4" class="tab-pane tab4">
+                    <div class="form-item">
+                        <label class="item-label">状态<span class="check-tips"></span></label>
+                        <div class="controls">
+                            <label class="radio">
+                                <input type="radio" value="1" name="status" <if condition="($info['status'] eq '1')">checked</if> >立即上架
+                            </label>
+                            <label class="radio">
+                                <input type="radio" value="0" name="status" <if condition="($info['status'] eq '0')">checked</if> >暂时下架
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 按钮 -->
+                <div class="form-item cf">
+                    <label class="item-label"></label>
+                    <div class="controls edit_sort_btn">
+                        <input type="hidden" name="id" value="{$info['id']}"/>
+                        <button class="btn submit-btn ajax-post no-refresh" type="submit" target-form="form-horizontal">确 定</button>
+                        <button class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/jquery.dragsort-0.5.1.min.js"></script>
+    <script type="text/javascript" src="__STATIC__/ueditor/ueditor.config.js"></script>
+    <script type="text/javascript" src="__STATIC__/ueditor/ueditor.all.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        $(function(){
+            var catid_one = "{$info.catid_one}";
+            var catid_two = "{$info.catid_two}";
+            var catid_three = "{$info.catid_three}";
+            var types = "{$info.type_id}";
+            var formats = "{$info.format_id}";
+            var orders = "{$info.order_id}";
+            var params = "{$info.param_id}";
+            showTab();
+            layui.use(['form', 'layer'], function () {
+                var layer = layui.layer;
+                var form = layui.form
+            });
+
+            //点击商品图右上角的叉叉
+            $(document).on("click",".close-modal",function(){
+                $(this).parent().remove();
+            });
+
+
+
+            $("#dragsort").dragsort({
+                dragSelector:'li',
+                placeHolderTemplate: '<li class="draging-place" style="float: left">&nbsp;</li>',
+                dragBetween:false,	//允许拖动到任意地方
+                opacity: 0.6, //拖动时，透明度为0.6
+                revert: true, //释放时，增加动画
+                dragEnd:function(){
+                    var self = $(this);
+                }
+            });
+
+            var editor = new baidu.editor.ui.Editor({toolbars:[['FullScreen', 'Source', 'Undo', 'Redo','Bold','italic','underline','strikethrough','justifyleft', 'justifycenter', 'justifyright', 'justifyjustify','insertimage','horizontal','spechars','forecolor','backcolor','indent','customstyle','paragraph','fontfamily','fontsize']] ,initialFrameWidth : 800,initialFrameHeight:450,elementPathEnabled:false,imageUrl:"{:u('add',array('type'=>'imageUp'))}",imagePath:'',catchRemoteImageEnable:true,catcherUrl:"{:u('add',array('type'=>'catcherUp'))}",catcherPath:''});
+            editor.render("content");
+            //自动获取一级分类
+            getCate(0,$("#catid_one"),catid_one);
+            //自动获取二级分类
+            getCate(catid_one,$("#catid_two"),catid_two);
+            //自动获取三级分类
+            getCate(catid_two,$("#catid_three"),catid_three);
+            var count = formats.split(",").length;
+            //自动获取类型
+            getFormat(types,formats,orders,params,count);
+            //一级分类被选择
+            $("#catid_one").change(function(){
+                if($(this).val() != 0){
+                    getCate($(this).val(),$("#catid_two"));
+                }
+            });
+            //二级分类被选择
+            $("#catid_two").change(function(){
+                if($(this).val() != 0){
+                    getCate($(this).val(),$("#catid_three"));
+                }
+            });
+            //选择类型后
+            $("#type").change(function(){
+                var type_id = $(this).val();
+                getFormat(type_id);
+            });
+            //选择规格
+            $(document).on("click","[name='format[]']",function(){
+                var format_id = $(this).val();
+                if($(this).prop('checked') == true){
+                    getParam(format_id,$(this).attr("data-name"));
+                }else{
+                    $("#param_"+format_id).remove();
+                }
+            });
+            //选择规格参数
+            $(document).on("click","[name='param[]']",function(){
+                var h = new Array();
+                var sequence = new Array();
+                var o = 0;
+                $("#format_param_area tr").each(function(){
+                    var i = 0;
+                    var sp = $(this).attr("parentid");
+                    h[sp] = new Array();
+                    sequence[o] = sp;
+                    o++;
+                    $(this).find("[name='param[]']").each(function(){
+                        if($(this).prop('checked') == true){
+                            h[sp][i] = $(this).val();
+                            i++;
+                        }
+                    });
+                });
+                var hh = [];
+                var hs = 0;
+                for(var p=0;p<h.length;p++){
+                    if($.trim(h[p])){
+                        hh[p] = h[p];
+                        hs++;
+                    }
+                }
+                if(hs>0){
+                    $.post("{:U('index')}",{
+                        data:hh,sequence:sequence,type:"calculate"
+                    },function(data){
+                        if(data.status == "1"){
+                            var length = data.info.length;
+                            var ppsk = '';
+                            var top = "";
+                            for(var i = 0;i<length;i++){
+                                var html = '<tr>';
+                                var length2 = data.info[i].length;
+                                var l = '';
+                                var ll = '';
+                                var lll = '';
+                                for(var y = 0;y<length2;y++){
+                                    if(y == 0){
+                                        l += 'datas_'+data.info[i][y];
+                                        ll += 'datal_'+data.info[i][y];
+                                        lll += 'datax_'+data.info[i][y];
+                                    }else{
+                                        l += '_'+data.info[i][y];
+                                        ll += '_'+data.info[i][y];
+                                        lll += '_'+data.info[i][y];
+                                    }
+                                    if(i == 0){
+                                        top += '<th>'+$("#idparam_"+data.info[i][y]).parents("tr").attr("data-name")+'</th>';
+                                    }
+                                    html += '<td>'+$("#idparam_"+data.info[i][y]).attr("data-name")+'</td>'
+                                }
+                                var ovalue = $("#"+l).val();
+                                var ovalue2 = $("#"+ll).val();
+                                var ovalue3 = $("#"+lll).val();
+                                if(ovalue > 0){
+                                    var oval = ovalue;
+                                }else{
+                                    var oval = 0;
+                                }
+                                if(ovalue2 > 0){
+                                    var oval2 = ovalue2;
+                                }else{
+                                    var oval2 = 0;
+                                }
+                                if(ovalue3 > 0){
+                                    var oval3 = ovalue3;
+                                }else{
+                                    var oval3 = 0;
+                                }
+                                html += '<td><input type="text" name="price_'+l+'" style="width:80px" value="'+oval+'" id="'+l+'" ></td>';
+                                html += '<td><input type="text" name="stock_num_'+ll+'" style="width:80px" value="'+oval2+'" id="'+ll+'"></td>';
+                                html += '<td><input type="text" name="sales_num'+lll+'" style="width:80px" id="'+lll+'" value="'+oval3+'" disabled></td>';
+                                html += '</tr>';
+                                ppsk += html;
+                            }
+                            if(top){
+                                top += '<th width="100">售价</th><th width="100">库存</th><th width="100">销量</th>';
+                                $("#param_top").html(top);
+                            }
+                            $("#format_param_area2").html('');
+                            $("#format_param_area2").html(ppsk);
+                        }
+                    }, 'json');
+                }else{
+                    $("#param_top").html('');
+                    $("#format_param_area2").html('');
+                }
+            });
+            //出售,库存点击
+            $(document).on("focus","#format_param_area2 input",function(){
+                if($(this).val() == "0"){
+                    $(this).val("");
+                }
+            }).on("blur","#format_param_area2 input",function(){
+                if($(this).val() == ""){
+                    $(this).val("0");
+                }
+            });
+
+        });
+        var kk = 0;
+        function getParam(format_id,names,params="",count=0){
+            if(format_id == 0){
+                $("#format_param_area").html('');
+            }else{
+                if(params){
+                    params = params.split(",");
+                }else{
+                    params = [];
+                }
+                $.get("{:U('index')}",{
+                    format_id:format_id,type:"param"
+                },function(data){
+                    if(data.status == "1"){
+                        var length = data.info.length;
+                        var html = '<tr id="param_'+format_id+'" parentid="'+format_id+'" data-name="'+names+'"><input type="hidden" name="order[]" value="'+format_id+'"><td>'+names+'</td><td>';
+                        for(var i = 0;i<length;i++){
+                            var checked = '';
+                            if(in_array(data.info[i]['id'],params)){
+                                checked = 'checked';
+                            }
+                            html += '<label class="checkbox" style="margin-left: 15px;" ><input type="checkbox" name="param[]" value="'+data.info[i]['id']+'" id="idparam_'+data.info[i]['id']+'" data-name="'+data.info[i]['name']+'" '+checked+'>'+data.info[i]['name']+'</label>';
+                        }
+                        html += '</td></tr>';
+                        $("#format_param_area").append(html);
+                        var h = new Array();
+                        var sequence = new Array();
+                        var o = 0;
+                        $("#format_param_area tr").each(function(){
+                            var i = 0;
+                            var sp = $(this).attr("parentid");
+                            h[sp] = new Array();
+                            sequence[o] = sp;
+                            o++;
+                            $(this).find("[name='param[]']").each(function(){
+                                if($(this).prop('checked') == true){
+                                    h[sp][i] = $(this).val();
+                                    i++;
+                                }
+                            });
+                        });
+                        kk++;
+                        if(kk == count){
+                            var hh = [];
+                            var hs = 0;
+                            for(var p=0;p<h.length;p++){
+                                if($.trim(h[p])){
+                                    hh[p] = h[p];
+                                    hs++;
+                                }
+                            }
+                            if(hs>0){
+                                $.post("{:U('index')}",{
+                                    data:hh,sequence:sequence,type:"calculate"
+                                },function(data){
+                                    if(data.status == "1"){
+                                        var length = data.info.length;
+                                        var ppsk = '';
+                                        var top = "";
+                                        for(var i = 0;i<length;i++){
+                                            var html = '<tr>';
+                                            var length2 = data.info[i].length;
+                                            var l = '';
+                                            var ll = '';
+                                            var lll = '';
+                                            for(var y = 0;y<length2;y++){
+                                                if(y == 0){
+                                                    l += 'datas_'+data.info[i][y];
+                                                    ll += 'datal_'+data.info[i][y];
+                                                    lll += 'datax_'+data.info[i][y];
+                                                }else{
+                                                    l += '_'+data.info[i][y];
+                                                    ll += '_'+data.info[i][y];
+                                                    lll += '_'+data.info[i][y];
+                                                }
+                                                if(i == 0){
+                                                    top += '<th>'+$("#idparam_"+data.info[i][y]).parents("tr").attr("data-name")+'</th>';
+                                                }
+                                                html += '<td>'+$("#idparam_"+data.info[i][y]).attr("data-name")+'</td>'
+                                            }
+                                            var ovalue = $("#"+l).val();
+                                            var ovalue2 = $("#"+ll).val();
+                                            if(ovalue > 0){
+                                                var oval = ovalue;
+                                            }else{
+                                                var oval = 0;
+                                            }
+                                            if(ovalue2 > 0){
+                                                var oval2 = ovalue2;
+                                            }else{
+                                                var oval2 = 0;
+                                            }
+                                            html += '<td><input type="text" name="price_'+l+'" style="width:80px" value="'+oval+'" id="'+l+'" ></td>';
+                                            html += '<td><input type="text" name="stock_num_'+ll+'" style="width:80px" value="'+oval2+'" id="'+ll+'"></td>';
+                                            html += '<td><input type="text" name="sales_num'+lll+'" style="width:80px" id="'+lll+'" disabled></td>';
+                                            html += '</tr>';
+                                            ppsk += html;
+                                        }
+                                        if(top){
+                                            top += '<th width="100">售价</th><th width="100">库存</th><th width="100">销量</th>';
+                                            $("#param_top").html(top);
+                                        }
+                                        $("#format_param_area2").html('');
+                                        $("#format_param_area2").html(ppsk);
+                                        getValue();
+                                    }
+                                }, 'json');
+                            }else{
+                                $("#param_top").html('');
+                                $("#format_param_area2").html('');
+                            }
+                        }
+
+                    }
+                }, 'json');
+            }
+        }
+
+
+        function getFormat(type_id,formats="",orders="",params="",count=0){
+            if(type_id == 0){
+                $("#format_area").html('');
+            }else{
+                if(formats){
+                    formats = formats.split(",");
+                }else{
+                    formats = [];
+                }
+                $.get("{:U('index')}",{
+                    type_id:type_id,type:"format"
+                },function(data){
+                    if(data.status == "1"){
+                        var length = data.info.length;
+                        var html = '';
+                        for(var i = 0;i<length;i++){
+                            var checked = '';
+                            if(in_array(data.info[i]['id'],formats)){
+                                checked = 'checked';
+                            }
+                            html += '<label class="checkbox"><input type="checkbox" name="format[]" value="'+data.info[i]['id']+'" data-name="'+data.info[i]['name']+'" '+checked+' id="formats_'+data.info[i]['id']+'">'+data.info[i]['name']+'</label>';
+                        }
+                        $("#format_area").html(html);
+                        //自动获取规格
+                        if(orders){
+                            orders = orders.split(",");
+                        }else{
+                            orders = [];
+                        }
+                        for(var pp=0;pp<orders.length;pp++){
+                            getParam(orders[pp],$("#formats_"+orders[pp]).attr("data-name"),params,count);
+                        }
+                    }
+                }, 'json');
+            }
+
+        }
+
+        function getCate(pid,thisIs,thisValue=0){
+            $.get("{:U('index')}",{
+                pid:pid,type:"cate"
+            },function(data){
+                if(data.status == "1"){
+                    var length = data.info.length;
+                    var html = '<option value="0">请选择</option>';
+                    for(var i = 0;i<length;i++){
+                        var selected = '';
+                        if(thisValue && thisValue == data.info[i]['id']){
+                            selected = 'selected';
+                        }
+                        html += '<option value="'+data.info[i]['id']+'" '+selected+'>'+data.info[i]['title']+'</option>';
+                    }
+                    thisIs.html(html);
+                }
+            }, 'json');
+        }
+        function getValue(){
+            //获取商品id
+            var goods_id = "{$info.id}";
+            var value = [];
+            var i = 0;
+            $("#format_param_area2 input").each(function(){
+                value[i] = $(this).attr("id");
+                i++;
+            });
+            $.post("{:U('index')}",{
+                value:value,goods_id:goods_id,type:"value"
+            },function(data){
+                if(data.status == "1"){
+                    var length = data.info.length;
+                    for(var i = 0;i<length;i++){
+                        $("#"+data.info[i]['id']).val(data.info[i]['value']);
+                    }
+                }
+            }, 'json');
+        }
+        function in_array(search,array){
+            for(var i in array){
+                if(array[i]==search){
+                    return true;
+                }
+            }
+            return false;
+        }
+        //导航高亮
+        highlight_subnav("{:U('index')}");
+    </script>
+</block>
+

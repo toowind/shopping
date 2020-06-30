@@ -1,0 +1,223 @@
+<extend name="Public/base" />
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>{$meta_title}</h2>
+    </div>
+    <div  class="cf">
+        <form class="layui-form layui-form-pane" id="search_form" action="{:u('pdd_user_order')}">
+            <div class="search-form fr cf">
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户UID :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="uid"  value="{$uid}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">用户来源 :  </label>
+                    <div class="layui-input-inline">
+                        <select name="platform" lay-search="">
+                            <option value="0">--全部--</option>
+                            <volist name="platform_text" id="v" key="k">
+                                <option value="{$k}" <if condition="($k eq platform)">selected</if>   >  {$v}  </option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">活跃时间 :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="shopping_start_time" id="shopping_start_time" value="{$shopping_end_time}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">活跃时间 :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="shopping_end_time" id="shopping_end_time" value="{$shopping_end_time}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="overflow: visible;">最近下单时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="order_start_time" id="order_start_time" value="{$order_start_time}" autocomplete="off" class="layui-input">
+                    </div>
+
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label" style="overflow: visible;">最近下单时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="order_end_time" id="order_end_time" value="{$order_end_time}" autocomplete="off" class="layui-input">
+                    </div>
+
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+    <div class="data-table table-striped">
+        <table class="">
+            <thead id="text_box">
+            <tr style="height:36px">
+                <th style="text-align: center;">用户账号</th>
+                <th style="text-align: center;">用户来源</th>
+                <th style="text-align: center;">总返利订单数</th>
+                <th style="text-align: center;">待结算订单数</th>
+                <th style="text-align: center;">已结算订单数</th>
+                <th style="text-align: center;">总返利金额</th>
+                <th style="text-align: center;">待结算金额</th>
+                <th style="text-align: center;">已结算金额</th>
+                <th style="text-align: center;">最近商城活跃时间</th>
+                <th style="text-align: center;">最近下单时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="_list">
+                <volist name="_list" id="val" key="key">
+                    <tr>
+                        <td align="center" width="120">
+                            {$val.uid}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.platform_text}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_order_num}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_pending_order_num}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_complete_order_num}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_amount}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_pending_amount}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_complete_amount}
+                        </td>
+                        <td align="center" width="80">
+                            {$val['shopping_lately_time']|date="Y-m-d H:i:s",###}
+                        </td>
+                        <td align="center" width="80">
+                            {$val['order_lately_time']|date="Y-m-d H:i:s",###}
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="12" class="text-center"> aOh! 暂时还没有内容! </td>
+            </notempty>
+            </tbody>
+        </table>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+<!--    UV PV 展示-->
+    <div class="data-table table-striped">
+        近14天每日PV UV 统计
+<table class="">
+    <thead id="text_box">
+    <tr style="height:36px">
+        <th style="text-align: center;">日期</th>
+        <th style="text-align: center;">中青PV</th>
+        <th style="text-align: center;">中青UV</th>
+        <th style="text-align: center;">蚂蚁PV</th>
+        <th style="text-align: center;">蚂蚁UV</th>
+    </tr>
+    </thead>
+    <tbody>
+    <notempty name="pvUv">
+        <volist name="pvUv" id="val" key="key">
+            <tr>
+                <td align="center" width="120">
+                    {$val.date}
+                </td>
+                <td align="center" width="50">
+                    {$val.zq_pv}
+                </td>
+                <td align="center" width="50">
+                    {$val.zq_uv}
+                </td>
+                <td align="center" width="50">
+                    {$val.my_pv}
+                </td>
+                <td align="center" width="50">
+                    {$val.my_uv}
+                </td>
+            </tr>
+        </volist>
+        <else/>
+        <td colspan="12" class="text-center"> aOh! 暂时还没有内容! </td>
+    </notempty>
+    </tbody>
+    </table>
+    </div>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/laydate/laydate.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            //初始化日历和皮肤
+            laydate.skin('molv');
+            laydate({
+                elem: '#shopping_start_time',
+                event: 'focus',
+                max: laydate.now(),
+                istoday : false
+            });
+            laydate({
+                elem: '#shopping_end_time',
+                event: 'focus',
+                max: laydate.now(),
+                istoday : false
+            });
+            laydate({
+                elem: '#order_start_time',
+                event: 'focus',
+                max: laydate.now(),
+                istoday : false
+            });
+            laydate({
+                elem: '#order_end_time',
+                event: 'focus',
+                max: laydate.now(),
+                istoday : false
+            });
+            layui.use(['form', 'layer','laydate'], function () {
+
+                var layer = layui.layer;
+                var form = layui.form;
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('Pdd/pdd_user_order')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+
+        })
+        //导航高亮
+        hight_subnav("{:U('Pdd/pdd_user_order')}");
+    </script>
+</block>

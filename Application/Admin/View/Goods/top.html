@@ -1,0 +1,169 @@
+<extend name="Public/base"/>
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	<div class="cf">
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+	<!-- 数据列表 -->
+	<div class="data-table">
+		<div class="data-table table-striped">
+			<table>
+				<!-- 表头 -->
+				<thead>
+				<tr>
+					<th style="text-align: center;" class="row-selected">
+						<input class="checkbox check-all" type="checkbox" style="width:17px;height:17px;margin-top: 10px">
+					</th>
+					<th style="text-align: center;">商品ID</th>
+					<th style="text-align: center;">排序</th>
+					<th style="text-align: center;">商品名称</th>
+					<th style="text-align: center;">封面图</th>
+					<th style="text-align: center;">价格</th>
+					<th style="text-align: center">添加时间</th>
+					<th style="text-align: center">库存</th>
+					<th style="text-align: center">销量</th>
+					<th style="text-align: center">状态</th>
+					<th style="text-align: center">操作</th>
+				</tr>
+				</thead>
+				<!-- 列表 -->
+				<tbody>
+				<notempty name="list">
+					<volist name="list" id="val" key="key">
+						<tr style="height:100px">
+							<td align="center" width="100">
+								<input class="ids row-selected" type="checkbox" name="ids" value="{$val.id}" style="width:17px;height:17px">
+							</td>
+							<td align="center" width="100">
+								{$val.id}
+							</td>
+							<td align="center" width="100">
+								<input type="text" name="sort" class="text input-mini sort" style="width:40px;" value="{$val.sort}" ovalue="{$val.sort}" data-id="{$val.id}">
+							</td>
+							<td align="center" width="250">
+								{$val.title}
+							</td>
+							<td align="center" width="80">
+								<img style="width:80px;height:80px;" src="{$val.thumb}">
+							</td>
+							<td align="center" width="80">
+								{$val.price}
+							</td>
+							<td align="center" width="150">
+								{$val['add_time']|date="Y-m-d H:i",###}
+							</td>
+							<td align="center" width="80">
+								{$val.stock_num}
+							</td>
+							<td align="center" width="80">
+								{$val.sales_num}
+							</td>
+							<td align="center" width="50">
+								<if condition="($val['status'] eq '1')">
+									出售中
+									<else/>
+									<span style="color:red">已下架</span>
+								</if>
+							</td>
+							<td align="center" width="160">
+								<i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="delete" url="{:u('topdel',array('ids'=>$val['id']))}" title="删除">&#xe640;</i>
+							</td>
+						</tr>
+					</volist>
+					<else/>
+					<td colspan="16" class="text-center">aOh! 暂时还没有内容!</td>
+				</notempty>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+        $(function () {
+            layui.use(['form', 'layer'], function () {
+                var layer = layui.layer;
+                var form = layui.form
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('attribute')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+
+
+            //删除
+            $("[name='delete']").click(function(){
+                var url = $(this).attr("url");
+                var msg = "确定要删除当前置顶吗?";
+                layer.confirm(msg,{icon:3,title:"删除置顶",move:false},function(index){
+                    var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                    $.get(url,function(data){
+                        if(data.status){
+                            layer.closeAll();
+                            layer.msg(data.info,{icon:6},function(){
+                                location.reload(true);
+                            });
+                        }else{
+                            layer.msg(data.info,{icon:5});
+                        }
+                        layer.close(index);
+                    }, 'json');
+                });
+            });
+            //排序
+            $(".sort").focus(function(){
+                if($(this).val() == "0"){
+                    $(this).val("");
+                }
+            }).blur(function(){
+                var self = $(this);
+                var ovalue = $(this).attr('ovalue');
+                var value = $(this).val();
+                if(value == "" && ovalue != value){
+                    $(this).val("0");
+                }else{
+                    if(ovalue != value){
+                        $.get('{:U("setTopSort")}',{id:$(this).attr('data-id'),sort:value}, function(data) {
+                            if(data.status == "1"){
+                                layer.closeAll();
+                                layer.msg(data.info,{icon:6,time:1000},function(){
+                                    location.reload(true);
+                                });
+                            }else{
+                                layer.tips(data.info,self, {
+                                    tips: [1]
+                                });
+                                self.val(ovalue);
+                            }
+                        });
+                    }
+                }
+            });
+        })
+        //导航高亮
+        highlight_subnav("{:U('attribute')}");
+	</script>
+</block>

@@ -1,0 +1,8 @@
+.idea
+.DS_Store
+*/.DS_Store
+.gitlab-ci.yml
+/Application/Common/Conf
+/Runtime/*
+/Application/User/Conf/*
+/Application/Admin/Conf/config.php

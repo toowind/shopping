@@ -1,0 +1,98 @@
+<extend name="Public/base" />
+<block name="style">
+    <style type="text/css">
+        .wz_tags{display: block;}
+        .wz_tags li{display: inline-block;position: relative;margin-left: 5px;}
+        .wz_tags li .tags_delete{display: block;width: 12px;height: 12px;border-radius: 10px;background:url(../Public/Admin/images/delete_icon.png) no-repeat;position: absolute;top: -5px;right: 0;}
+        .wz_tags span{display: inline-block;border-radius:30px;border:1px solid #ddd;padding: 5px 20px;}
+        .wz_tags input{display:block;width: auto;max-width:100px;}
+    </style>
+</block>
+<block name="body">
+    <div class="main-title cf">
+        <h2>{$meta_title}</h2>
+    </div>
+    <!-- 标签页导航 -->
+    <div class="tab-content">
+        <!-- 表单 -->
+        <form id="form" action="{:U('attributeadd',array('id'=>$info['id']))}" method="post" class="form-horizontal">
+            <div class="form-item">
+                <label class="item-label required">所属类型<span class="check-tips"></span></label>
+                <div class="controls">
+                    <span style="color: red">{$info.name}</span>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="item-label required">属性名称<span class="check-tips"></span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="name">
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="item-label">属性方式<span class="check-tips"></span></label>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" value="0" name="mold" checked>单选
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="1" name="mold">多选
+                    </label>
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="item-label">属性排序<span class="check-tips"></span></label>
+                <div class="controls">
+                    <input type="text" class="text input-small" name="sort" id="sort" value="0">
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="item-label">属性参数<span class="check-tips"></span></label>
+                <div class="controls">
+                    <ul class="wz_tags" id="param"></ul>
+                </div>
+                <div class="form-item">
+                    <button class="layui-btn" type="button" id="addparam"><i class="layui-icon"></i> 添加</button>
+
+            </div>
+            <div class="form-item cf">
+                <button class="btn submit-btn ajax-post hidden" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+                <a class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</a>
+            </div>
+        </form>
+    </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        $(function(){
+            layui.use(['form', 'layer'], function () {
+                var layer = layui.layer;
+                var form = layui.form
+
+
+            });
+            $("#sort").focus(function(){
+                if($(this).val() == "0"){
+                    $(this).val("");
+                }
+            }).blur(function(){
+                if($(this).val() == ""){
+                    $(this).val("0");
+                }
+            });
+            //添加参数
+            $("#addparam").click(function(){
+                layer.prompt({title: '输入参数名称', formType: 0}, function(param, index){
+                    layer.close(index);
+                    $("#param").append('<li><span>'+param+'</span><input type="hidden" name="param[]" value="'+param+'"> <a class="tags_delete"  href="javascript:;"></a></li>');
+                });
+            });
+            //删除参数
+            $(document).on("click",".tags_delete",function(){
+                $(this).parents("li").remove();
+            });
+        });
+
+        highlight_subnav("{:U('attribute')}");
+    </script>
+</block>

@@ -1,0 +1,36 @@
+<form class="layui-form layui-form-pane" id="add_channel_form" style="padding: 30px 30px 0px 30px;">
+    <table id="demo" lay-filter="test"></table>
+</form>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="add">添加</a>
+</script>
+
+<script type="text/javascript">
+    $(function(){
+        layui.use('table', function(){
+            var table = layui.table;
+            //第一个实例
+            table.render({
+                elem: '#demo'
+                ,url: "{:u('index',array('type'=>'selectGoodsList'))}" //数据接口
+                ,page: true //开启分页
+                ,limit:10
+                ,cols: [[ //表头
+                    {field: 'id',title :' 商品ID',width:100, fixed: 'left'}
+                    ,{field: 'thumb', title: '封面', width:80,align:'center'}
+                    ,{field: 'title', title: '标题'}
+                    ,{field: 'times', title: '创建时间', width:300}
+                    ,{toolbar: '#barDemo', title: '操作', width:100,fixed: 'right'}
+                ]]
+            });
+            //监听行工具事件
+            table.on('tool(test)', function(obj){
+                var data = obj.data;
+                if(obj.event === 'add'){
+                    var sitenum = $("#sitenum").val();
+                    $("#dragsort"+sitenum).append('<li class="getSort" style="float: left;padding-right: 10px;position: relative;"><img src="' + data.img + '" style="width:50px"><a class="close-modal dragSelector">×</a><input type="hidden" name="sort'+sitenum+'[]" value="' + data.id + '"/></li>');
+                }
+            });
+        });
+    });
+</script>

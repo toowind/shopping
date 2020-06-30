@@ -1,0 +1,179 @@
+<extend name="Public/base" />
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>奖品详情</h2>
+    </div>
+    <div  class="cf">
+        <div class="fl search-form">
+            <div class="sc_box">
+                <div class="row">
+                    <a class="btn" href="{:U('add')}" url="" >新 增</a>
+                </div>
+            </div>
+        </div>
+        <form class="layui-form layui-form-pane" id="search_form" action="{:u('pdd_order_list')}">
+            <div class="search-form fr cf">
+                <div class="layui-inline">
+                    <label class="layui-form-label">编号 :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="order_sn" value="{$search.order_sn}"  autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">商品ID: </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="order_amount_start" value="{$search.order_amount_start}"  class="layui-input" placeholder="开始金额">
+                    </div>
+                </div>
+                <div class="sc_box">
+                    <div class="row">
+                        <label>抽奖时间 :  </label>
+                        <input type="text" name="lucky_time_start" id="lucky_time_start" class="text input-2x" value="{$start_time}" readonly="true">
+                        -
+                        <input type="text" name="lucky_time_end" id="lucky_time_end" class="text input-2x" value="{$end_time}" readonly="true">
+                    </div>
+                </div>
+                <div class="sc_box">
+                    <div class="row">
+                        <label>开奖时间 :  </label>
+                        <input type="text" name="lottery_time_start" id="lottery_time_start" class="text input-2x" value="{$start_time}" readonly="true">
+                        -
+                        <input type="text" name="lottery_time_end" id="lottery_time_end" class="text input-2x" value="{$end_time}" readonly="true">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">状态 :  </label>
+                    <div class="layui-input-inline">
+                        <select name="order_status">
+                            <option value="">--全部--</option>
+                            <volist name="order_status_text" id="v" key="k">
+                                <option value="{$v.key}" <if condition="($k eq $order_status)">selected</if>   >  {$v.value}  </option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+    <div class="data-table table-striped">
+        <table class="">
+            <thead id="text_box">
+            <tr style="height:36px">
+                <th style="text-align: center;">订单号</th>
+                <th style="text-align: center;">下单时间</th>
+                <th style="text-align: center;">用户账号</th>
+                <th style="text-align: center;">订单来源</th>
+                <th style="text-align: center;">订单金额</th>
+                <th style="text-align: center;">用户所得返利金额</th>
+                <th style="text-align: center;">平台所得返利金额</th>
+                <th style="text-align: center;">订单状态</th>
+                <th style="text-align: center;">返利状态</th>
+                <th style="text-align: center;">所购商品</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="_list">
+                <volist name="_list" id="val" key="key">
+                    <tr>
+                        <td align="center" width="120">
+                            {$val.order_sn}
+                        </td>
+                        <td align="center" width="80">
+                            {$val['order_create_time']|date="Y-m-d H:i:s",###}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.uid}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.platform_text}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.order_amount}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.promotion_amount_true}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.promotion_amount_platform}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.order_status}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.rebate_status_text}
+                        </td>
+                        <td align="center" width="150">
+                            【{$val.goods_id}】<span>{$val.goods_name}</span>
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="12" class="text-center"> aOh! 暂时还没有内容! </td>
+            </notempty>
+            </tbody>
+        </table>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/laydate/laydate.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            //初始化日历和皮肤
+            laydate.skin('molv');
+            laydate({
+                elem: '#start_time',
+                type: 'datetime',
+                event: 'focus',
+                max: laydate.now(),
+                istoday : false,
+                format: 'YYYY-MM-DD hh:mm:ss',
+            });
+            laydate({
+                elem: '#end_time',
+                type : 'datetime',
+                event: 'focus',
+                max: laydate.now(),
+                istoday : false,
+                format: 'YYYY-MM-DD hh:mm:ss',
+            });
+            layui.use(['form', 'layer','laydate'], function () {
+
+                var layer = layui.layer;
+                var form = layui.form;
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('Pdd/pdd_order_list')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+
+        })
+        //导航高亮
+        highlight_subnav("{:U('Pdd/pdd_order_list')}");
+    </script>
+</block>

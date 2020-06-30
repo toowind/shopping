@@ -1,0 +1,281 @@
+<extend name="Public/base"/>
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>{$meta_title}</h2>
+    </div>
+	<div class="cf">
+		<div class="fl">
+            <div class="tools">
+                <button class="layui-btn layui-btn-normal" onclick="window.location.href='{:U("focusadd")}'">添加轮播</button>
+                <button class="layui-btn layui-btn-primary" name="setStatus" url="{:U('setFocusStatus',array('status'=>1))}">批量启用</button>
+                <button class="layui-btn layui-btn-primary" name="setStatus" url="{:U('setFocusStatus',array('status'=>0))}">批量禁用</button>
+                <button class="layui-btn layui-btn-primary" id="delete_all">批量删除</button>
+            </div>
+		</div>
+		<!-- 高级搜索 -->
+		<div class="search-form fr cf">
+			<div class="sleft">
+                <div class="drop-down" style="width:106px;">
+                    <span id="sch-sort-txt" class="sort-txt" style="width:70px;">
+                        <if condition="(!$status)">
+                            所有
+                            <elseif condition="($status eq '1')"/>
+                            启用
+                            <else/>
+                            禁用
+                        </if>
+                    </span>
+                    <i class="arrow arrow-down"></i>
+                    <ul id="sub-sch-menu" class="nav-list hidden">
+                        <if condition="($status neq '1')">
+                            <li>
+                                <a href="javascript:;" value="1" style="width:87px;" field="status">启用</a>
+                            </li>
+                        </if>
+                        <if condition="($status neq '2')">
+                            <li>
+                                <a href="javascript:;" value="2" style="width:87px;" field="status">禁用</a>
+                            </li>
+                        </if>
+                        <if condition="($status)">
+                            <li><a href="javascript:;" value="0" style="width:87px;" field="status">所有</a></li>
+                        </if>
+                    </ul>
+                </div>
+			</div>
+            <input type="hidden" id="status" name="status" value="{$status}">
+            <a class="sch-btn" href="javascript:;" id="search" url="{:u('Goods/focus')}" style="display: none"><i class="btn-search"></i></a>
+		</div>
+	</div>
+    <div class="page">
+        {$page|default=''}
+    </div>
+    <!-- 数据列表 -->
+    <div class="data-table">
+        <div class="data-table table-striped">
+            <table>
+                <!-- 表头 -->
+                <thead>
+                    <tr>
+                        <th style="text-align: center" class="row-selected row-selected">
+                            <input class="check-all" type="checkbox" style="width:17px;height:17px;margin-top: 6px">
+                        </th>
+                        <th style="text-align: center">编号</th>
+                        <th style="text-align: center">排序</th>
+                        <th style="text-align: center">轮播名称</th>
+                        <th style="text-align: center">轮播图</th>
+                        <th style="text-align: center">跳转方式</th>
+                        <th style="text-align: center">商品ID或URL</th>
+                        <th style="text-align: center">状态</th>
+                        <th style="text-align: center">操作</th>
+                    </tr>
+                </thead>
+                <!-- 列表 -->
+                <tbody>
+                <volist name="list" id="val" key="key">
+                    <tr style="height:120px">
+                        <td align="center" width="30">
+                            <input class="ids row-selected" type="checkbox" name="ids[]" value="{$val.id}" style="width:17px;height:17px">
+                        </td>
+                        <td align="center" width="80">
+                            {$val.id}
+                        </td>
+                        <td align="center" width="100">
+                            <input type="text" name="sort" class="text input-mini sort" style="width:40px;" value="{$val.sort}" ovalue="{$val.sort}" data-id="{$val.id}">
+                        </td>
+                        <td align="center" width="100">
+                            {$val.name}
+                        </td>
+                        <td align="center" width="200">
+                            <a href="{$val.thumb}" target="_blank" style="border-bottom: none"><img src="{$val.thumb}" width="260px" height="100px" /></a>
+                        </td>
+                        <td align="center" width="100">
+                            <if condition="($val['jump'] eq '1')">
+                                商品
+                            <else/>
+                                链接
+                            </if>
+                        </td>
+                        <td align="center" width="350">
+                            <if condition="($val['jump'] eq '1')">
+                                {$val.goods_id}
+                            <else/>
+                                {$val.url}
+                            </if>
+                        </td>
+                        <td align="center" width="50">
+                            <img src="__IMG__/status_{$val.status}.jpg" >
+                        </td>
+                        <td align="center" width="100">
+                            <i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="edit" url="{:u('focusedit',array('id'=>$val['id']))}">&#xe642;</i>
+                            <i class="layui-icon" style="cursor: pointer;font-size: 20px;" name="delete" url="{:u('focusdel',array('ids'=>$val['id']))}">&#xe640;</i>
+                        </td>
+                    </tr>
+                </volist>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="page">
+        {$page|default=''}
+    </div>
+</block>
+<block name="script">
+<script type="text/javascript">
+$(function(){
+    layui.use(['layer','laydate'], function(){
+        var layer = layui.layer;
+
+    });
+    //编辑
+    $("[name='edit']").click(function(){
+        var url = $(this).attr("url");
+        window.location.href = url;
+    });
+
+
+	//搜索功能
+	$("#search").click(function(){
+		var url = $(this).attr('url');
+        var query  = $('.search-form').find('input').serialize();
+        query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g,'');
+        query = query.replace(/^&/g,'');
+        if( url.indexOf('?')>0 ){
+            url += '&' + query;
+        }else{
+            url += '?' + query;
+        }
+		window.location.href = url;
+	});
+    /* 状态搜索子菜单 */
+    $(".search-form").find(".drop-down").hover(function(){
+        $("#sub-sch-menu").removeClass("hidden");
+    },function(){
+        $("#sub-sch-menu").addClass("hidden");
+    });
+    $("#sub-sch-menu li").find("a").each(function(){
+        $(this).click(function(){
+            var parent = $(this).attr('value');
+            var field = $(this).attr("field");
+            $("#"+field).val(parent);
+            $("#search").click();
+        })
+    });
+    //批量启用与批量禁用
+    $("[name='setStatus']").click(function(){
+        var ids = [];
+        var i = 0;
+        $(".ids").each(function(){
+            if(this.checked){
+                ids[i] = $(this).val();
+                i++;
+            }
+        });
+        if(!ids || ids == ""){
+            layer.msg("请选择要操作的数据!",{icon:5,time:1000});
+            return false;
+        }
+        var url = $(this).attr("url");
+        var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+        $.get(url,{
+            ids:ids
+        },function(data){
+            if(data.status){
+                layer.closeAll();
+                layer.msg(data.info,{icon:6},function(){
+                    location.reload(true);
+                });
+            }else{
+                layer.msg(data.info,{icon:5,time:1000});
+            }
+            layer.close(index);
+        }, 'json');
+    });
+    //单条删除
+    $("[name='delete']").click(function(){
+        var url = $(this).attr("url");
+        var msg = "确定要删除选中的轮播吗?不可恢复!!";
+        layer.confirm(msg,{icon:3,title:"轮播删除",move:false},function(index){
+            layer.close(index);
+            var index2 = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+            $.get(url,function(data){
+                if(data.status){
+                    layer.closeAll();
+                    layer.msg(data.info,{icon:6,time:1000},function(){
+                        location.reload(true);  //刷新
+                    });
+                }else{
+                    layer.msg(data.info,{icon:5,time:1000});
+                }
+                layer.close(index2);
+            }, 'json');
+        });
+    });
+    //批量删除
+    $("#delete_all").click(function(){
+        var ids = [];
+        var i = 0;
+        $(".ids").each(function(){
+            if(this.checked){
+                ids[i] = $(this).val();
+                i++;
+            }
+        });
+        if(!ids || ids == ""){
+            layer.msg("请选择要操作的数据!",{icon:5,time:1000});
+            return false;
+        }
+        var msg = "确定要删除选中的轮播吗?不可恢复!!";
+        layer.confirm(msg,{icon:3,title:"轮播删除",move:false},function(index){
+            layer.close(index);
+            var index2 = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+            $.get("{:u('focusdel')}",{
+                ids:ids
+            },function(data){
+                if(data.status){
+                    layer.closeAll();
+                    layer.msg(data.info,{icon:6},function(){
+                        location.reload(true);
+                    });
+                }else{
+                    layer.msg(data.info,{icon:5,time:1000});
+                }
+                layer.close(index2);
+            }, 'json');
+        });
+    });
+    //排序
+    $(".sort").focus(function(){
+        if($(this).val() == "0"){
+            $(this).val("");
+        }
+    }).blur(function(){
+        var self = $(this);
+        var ovalue = $(this).attr('ovalue');
+        var value = $(this).val();
+        if(value == "" && ovalue != value){
+            $(this).val("0");
+        }else{
+            if(ovalue != value){
+                $.get('{:U("setfocussort")}',{id:$(this).attr('data-id'),sort:value}, function(data) {
+                    if(data.status == "1"){
+                        layer.closeAll();
+                        layer.msg(data.info,{icon:6},function(){
+                            location.reload(true);
+                        });
+                    }else{
+                        layer.tips(data.info,self, {
+                            tips: [1]
+                        });
+                        self.val(ovalue);
+                    }
+                });
+            }
+        }
+    });
+})
+//导航高亮
+highlight_subnav("{:U('Goods/focus')}");
+</script>
+</block>

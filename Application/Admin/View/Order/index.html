@@ -1,0 +1,239 @@
+<extend name="Public/base"/>
+<block name="body">
+	<!-- 标题栏 -->
+	<div class="main-title">
+		<h2>{$meta_title}</h2>
+	</div>
+	<div class="cf">
+		<form class="layui-form layui-form-pane" id="search_form" action="{:u('index')}">
+			<div class="search-form fr cf">
+				<div class="layui-inline">
+					<label class="layui-form-label">订单号</label>
+					<div class="layui-input-inline">
+						<input type="text" name="orderid" value="{$orderid}" autocomplete="off" class="layui-input" style="width:250px">
+					</div>
+				</div>
+				<div class="layui-inline">
+					<label class="layui-form-label">订单状态</label>
+					<div class="layui-input-inline">
+						<select name="status"  lay-search="">
+							<option value="0">全部</option>
+							<option value="1" <if condition="($status eq '1')">selected</if>>待付款</option>
+							<option value="2" <if condition="($status eq '2')">selected</if>>待发货</option>
+							<option value="3" <if condition="($status eq '3')">selected</if>>已发货</option>
+							<option value="4" <if condition="($status eq '4')">selected</if>>已完成</option>
+							<option value="5" <if condition="($status eq '5')">selected</if>>已关闭</option>
+						</select>
+					</div>
+					<button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+				</div>
+			</div>
+
+
+		</form>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+	<!-- 数据列表 -->
+	<div class="data-table">
+		<div class="data-table table-striped">
+			<table>
+				<!-- 表头 -->
+				<thead>
+				<tr>
+					<th style="text-align: center;">订单号</th>
+					<th style="text-align: center">总价</th>
+					<th style="text-align: center">买家UID</th>
+					<th style="text-align: center">下单时间</th>
+					<th style="text-align: center">订单状态</th>
+					<th style="text-align: center">操作</th>
+				</tr>
+				</thead>
+				<!-- 列表 -->
+				<tbody>
+				<notempty name="list">
+					<volist name="list" id="val" key="key">
+						<tr style="height:100px">
+							<td align="center" width="80">
+								{$val.orderid}
+							</td>
+							<td align="center" width="100">
+								{$val.total_price}
+							</td>
+							<td align="center" width="100">
+								{$val.uid}
+							</td>
+							<td align="center" width="150">
+								{$val['add_time']|date="Y-m-d H:i:s",###}
+							</td>
+							</td>
+							<td align="center" width="50">
+								<if condition="($val['status'] eq '0')">
+									待付款
+								<elseif condition="($val['status'] eq '1')"/>
+									<if condition="($val['send_type'] eq '0')">
+										待发货
+									<elseif condition="($val['send_type'] eq '1')"/>
+										已发货
+									<elseif condition="($val['send_type'] eq '2')"/>
+										已完成
+									</if>
+								<elseif condition="($val['status'] eq '2')"/>
+										已关闭
+								</if>
+							</td>
+							<td align="center" width="160">
+								<if condition="($val['status'] eq '0')">
+									<a href="javascript:;" name="closeorder" url="{:u('close',array('id'=>$val['id']))}">交易关闭</a>
+									<elseif condition="($val['status'] eq '1')"/>
+										<if condition="($val['send_type'] eq '0')">
+											<a href="javascript:;" name="deliveryorder" url="{:u('delivery',array('id'=>$val['id']))}">商品发货</a>
+										<elseif condition="($val['send_type'] eq '1')"/>
+											<a href="javascript:;" name="seedetail" url="{:u('seedetail',array('id'=>$val['id']))}">查看详情</a>
+										<elseif condition="($val['send_type'] eq '2')"/>
+											<a href="javascript:;" name="seedetail" url="{:u('seedetail',array('id'=>$val['id']))}">查看详情</a>
+										</if>
+									<elseif condition="($val['status'] eq '2')"/>
+
+								</if>
+							</td>
+						</tr>
+						<volist name="val['relation']" id="v">
+							<tr style="height:65px">
+								<td align="left"  colspan="12" style="color:black">
+									<span style="padding-left: 25px;"><label style="color:#999!important">商品ID</label>：{$v.goods_id}</span>
+									<span style="padding-left: 25px;"><label style="color:#999!important">商品封面</label>：<img src="{$v.thumb}" style="height:50px;height:50px"></span>
+									<span style="padding-left: 25px;"><label style="color:#999!important">商品名称</label>：{$v.title}</span>
+									<span style="padding-left: 25px;"><label style="color:#999!important">商品单价</label>：{$v.price}</span>
+									<span style="padding-left: 25px;"><label style="color:#999!important">商品数量</label>：{$v.number}</span>
+									<span style="padding-left: 25px;"><label style="color:#999!important">商品明细</label>:
+									<volist name="v['param_name']" id="vv">
+										<span style="padding-left: 10px;">{$vv}</span>
+									</volist>
+								</span>
+								</td>
+							</tr>
+						</volist>
+
+					</volist>
+					<else/>
+					<td colspan="16" class="text-center">aOh! 暂时还没有内容!</td>
+				</notempty>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="page">
+		{$page}
+	</div>
+</block>
+<block name="script">
+	<script type="text/javascript">
+        $(function () {
+            layui.use(['form', 'layer'], function () {
+                var layer = layui.layer;
+                var form = layui.form
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('index')}";
+                    var query = $("#search_form").serialize();
+                    query = query.replace(/(&|^)(\w*?\d*?\-*?_*?)*?=?((?=&)|(?=$))/g, '');
+                    query = query.replace(/^&/g, '');
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + query;
+                    } else {
+                        url += '?' + query;
+                    }
+
+                    window.location.href = url;
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+            //查看详情
+            $("[name='seedetail']").click(function(){
+                var url = $(this).attr("url");
+                var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                $.get(url,function(data){
+                    if(data.status){
+                        layer.open({
+                            type: 1,
+                            title: false,
+                            shadeClose: true,
+                            area: [($(window).width()/2-150)+'px'], //宽高
+                            content: data.info
+                        });
+                    }else{
+                        layer.msg(data.info,{icon:5});
+                    }
+                    layer.close(index);
+                }, 'json');
+            });
+			//商品发货
+            $("[name='deliveryorder']").click(function(){
+                var url = $(this).attr("url");
+                var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                $.get(url,function(data){
+                    if(data.status){
+                        layer.open({
+                            type: 1,
+                            title: false,
+                            shadeClose: true,
+                            area: [($(window).width()/2-150)+'px'], //宽高
+                            content: data.info,
+                            success: function(layero, index){
+                                layero.find("#submit_form").click(function(){
+                                    var button = $(this);
+                                    var self = $("#add_channel_form");
+                                    if(button.hasClass("layui-btn-disabled")){
+                                        return false;
+                                    }
+                                    button.addClass("layui-btn-disabled").text("提交中...");
+                                    $.post(url,self.serialize(),function(data){
+                                        if(data.status){
+                                            layer.closeAll();
+                                            layer.msg(data.info,{icon:6},function(){
+                                                location.reload(true);
+                                            });
+                                        }else{
+                                            layer.msg(data.info,{icon:5});
+                                            button.removeClass("layui-btn-disabled").text("发 货");
+                                        }
+                                    }, 'json');
+                                });
+                            }
+                        });
+                    }else{
+                        layer.msg(data.info,{icon:5});
+                    }
+                    layer.close(index);
+                }, 'json');
+            });
+            //交易关闭
+            $("[name='closeorder']").click(function(){
+                var url = $(this).attr("url");
+                var msg = "确定要关闭当前订单交易吗?";
+                layer.confirm(msg,{icon:3,title:"交易关闭",move:false},function(index){
+                    var index = layer.msg('加载中...', {icon: 16,time:0,shade:[0.3,'#000']});
+                    $.get(url,function(data){
+                        if(data.status){
+                            layer.closeAll();
+                            layer.msg(data.info,{icon:6},function(){
+                                location.reload(true);
+                            });
+                        }else{
+                            layer.msg(data.info,{icon:5});
+                        }
+                        layer.close(index);
+                    }, 'json');
+                });
+            });
+        })
+        //导航高亮
+        highlight_subnav("{:U('index')}");
+	</script>
+</block>

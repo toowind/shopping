@@ -1,0 +1,236 @@
+<extend name="Public/base" />
+<block name="body">
+    <!-- 标题栏 -->
+    <div class="main-title">
+        <h2>{$meta_title}</h2>
+    </div>
+    <div  class="cf">
+        <form class="layui-form layui-form-pane" id="search_form" action="{:u('pdd_goods_list')}">
+            <div class="search-form fr cf">
+                <div class="layui-inline">
+                    <label class="layui-form-label">商品ID :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="goods_id"  value="{$search.goods_id}" autocomplete="on" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">原价(S) :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="min_group_price_start"  value="{$search.min_group_price_start}" autocomplete="on" class="layui-input" placeholder="开始金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">原价(E) :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="min_group_price_end"  value="{$search.min_group_price_end}" autocomplete="on" class="layui-input" placeholder="结束金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">券面额(S):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="coupon_discount_start"  value="{$search.coupon_discount_start}" autocomplete="on" class="layui-input" placeholder="开始金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">券面额(E):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="coupon_discount_end"  value="{$search.coupon_discount_end}" autocomplete="on" class="layui-input" placeholder="结束金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">券后价(S):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="coupon_after_price_start"  value="{$search.coupon_after_price_start}" autocomplete="on" class="layui-input" placeholder="开始金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">券后价(E):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="coupon_after_price_end"  value="{$search.coupon_after_price_end}" autocomplete="on" class="layui-input" placeholder="结束金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">佣金(S):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="promotion_money_start"  value="{$search.promotion_money_start}" autocomplete="on" class="layui-input" placeholder="开始金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">佣金(E):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="promotion_money_end"  value="{$search.promotion_money_end}" autocomplete="on" class="layui-input" placeholder="结束金额">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">返佣比(S):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="promotion_rate_start"  value="{$search.promotion_rate_start}" autocomplete="on" class="layui-input" placeholder="开始">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">返佣比(E):  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="promotion_rate_end"  value="{$search.promotion_rate_end}" autocomplete="on" class="layui-input" placeholder="结束">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">到期时间 :  </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="end_time" id="end_time" value="{$end_time}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">排序规则 :  </label>
+                    <div class="layui-input-inline">
+                        <select name="sorting_rules" lay-search="">
+                            <volist name="SortingRules" id="v" key="k">
+                                <option value="{$k}" <if condition="($k eq $sorting)">selected</if>>  {$v}  </option>
+                            </volist>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layui-btn-primary layui-btn-sm" style="height:38px;"  lay-submit="" id="search" lay-filter="search"><i class="layui-icon">&#xe615;</i></button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+    <div class="data-table table-striped">
+        <table class="">
+            <thead id="text_box">
+            <tr style="height:36px">
+                <th style="text-align: center;">商品id</th>
+                <th style="text-align: center;">商品名称</th>
+                <th style="text-align: center;">缩略图</th>
+                <th style="text-align: center;">最小拼团价</th>
+                <th style="text-align: center;">类目</th>
+                <th style="text-align: center;">标签</th>
+                <th style="text-align: center;">优惠券金额</th>
+                <th style="text-align: center;">优惠券总量</th>
+                <th style="text-align: center;">优惠券剩余</th>
+                <th style="text-align: center;">优惠券开始时间</th>
+                <th style="text-align: center;">优惠券结束时间</th>
+                <th style="text-align: center;">券后价</th>
+                <th style="text-align: center;">佣金比例</th>
+                <th style="text-align: center;">佣金金额</th>
+                <th style="text-align: center;">销量</th>
+            </tr>
+            </thead>
+            <tbody>
+            <notempty name="list">
+                <volist name="list" id="val" key="key">
+                    <tr>
+                        <td align="center" width="100">
+                            <a target="_blank" href="http://shop.anttop6.com/?token=MDAwMDAwMDAwMJrcepbDu7WataB5roK3m9mvqa9rrnN9rcV4fWKNo27bl7Z5m6vRlWavn6uglqqsycasvKzFnWSAvXSAaICOZZ8#/goodsDetails/{$val.goods_id}?ms=0&jump=youth.cn"> {$val.goods_id}</a>
+                        </td>
+                        <td align="center" width="100">
+                            {$val.goods_name}
+                        </td>
+                        <td align="center" width="100">
+                           <img src=" {$val.goods_thumbnail_url}" style="width:120;height:120">
+                        </td>
+                        <td align="center" width="50">
+                            {$val.min_group_price}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.category_name}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.opt_name}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.coupon_discount}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.coupon_total_quantity}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.coupon_remain_quantity}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.coupon_start_time}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.coupon_end_time}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.coupon_after_price}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.promotion_rate}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.promotion_money}
+                        </td>
+                        <td align="center" width="50">
+                            {$val.sales_tip}
+                        </td>
+                    </tr>
+                </volist>
+                <else/>
+                <td colspan="12" class="text-center"> aOh! 暂时还没有内容! </td>
+            </notempty>
+            </tbody>
+        </table>
+    </div>
+    <div class="page">
+        {$page}
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript" src="__STATIC__/laydate/laydate.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            //初始化日历和皮肤
+            laydate.skin('molv');
+            laydate({
+                elem: '#end_time',
+                type: 'datetime',
+                event: 'focus',
+                istoday : true,
+                format: 'YYYY-MM-DD hh:mm:ss',
+            });
+            layui.use(['form', 'layer','laydate'], function () {
+
+                var layer = layui.layer;
+                var form = layui.form;
+                form.on('submit(search)', function (data) {
+                    var url = "{:U('Pdd/pdd_goods_list')}";
+                    var query = $("#search_form").serialize();
+                    // console.log(query);
+                    var paraArr = query.split('&');
+                    var paramsAll={}; //所有上传参数obj
+                    var upString ='' //上传参数字符串
+                    for(var i = 0;i < paraArr.length;i++){
+                        if(paraArr[i].split('=')[1]){
+                            paramsAll[paraArr[i].split('=')[0]]=paraArr[i].split('=')[1]
+                        }
+                    }
+                    for(var k in paramsAll){
+                        upString = upString+ '&' + k+'='+paramsAll[k];
+                    }
+                    if (url.indexOf('?') > 0) {
+                        url += '&' + upString.substr(1);
+                    } else {
+                        url += '?' + upString.substr(1);
+                    }
+                    window.location.href='//'+window.location.host+url
+                    return false;
+                });
+
+                //表单初始赋值
+                form.val('example', {
+
+                })
+            });
+
+        })
+        //导航高亮
+        highlight_subnav("{:U('Pdd/pdd_goods_list')}");
+    </script>
+</block>

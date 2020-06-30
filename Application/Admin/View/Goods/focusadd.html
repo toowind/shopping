@@ -1,0 +1,123 @@
+<extend name="Public/base" />
+<block name="body">
+    <script type="text/javascript" src="__STATIC__/uploadify/jquery.uploadify.min.js"></script>
+    <div class="main-title cf">
+        <h2>{$meta_title}</h2>
+    </div>
+    <!-- 标签页导航 -->
+    <div class="tab-content">
+        <!-- 表单 -->
+        <form id="form" action="{:U('focusadd')}" method="post" class="form-horizontal">
+            <div class="form-item">
+                <label class="item-label required">轮播名称<span class="check-tips"></span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="name">
+                </div>
+            </div>
+            <div class="form-item">
+                <label class="item-label">封面图</label>
+                <div class="controls">
+                    <input type="file" id="upload_picture_image">
+                    <input type="hidden" name="thumb" id="cover_id_image"/>
+                    <div class="upload-img-box"></div>
+                    <script type="text/javascript">
+                        //上传图片
+                        /* 初始化上传插件 */
+                        $("#upload_picture_image").uploadify({
+                            "height"          : 30,
+                            "swf"             : "__STATIC__/uploadify/uploadify.swf",
+                            "fileObjName"     : "download",
+                            "buttonText"      : "上传图片",
+                            "uploader"        : "{:U('File/uploadQiniu',array('session_id'=>session_id(),'prefix'=>'focus'))}",
+                            "width"           : 120,
+                            'removeTimeout'   : 1,
+                            'fileTypeExts'    : '*.jpg; *.png; *.gif;',
+                            "onUploadSuccess" : uploadPictureimage,
+                            'onFallback' : function() {
+                                alert('未检测到兼容版本的Flash.');
+                            }
+                        });
+                        function uploadPictureimage(file, data){
+                            var data = $.parseJSON(data);
+                            var src = '';
+                            if(data.status){
+                                src = data.url || '__ROOT__' + data.path;
+                                $("#cover_id_image").val(src);
+                                $("#cover_id_image").parent().find('.upload-img-box').html(
+                                        '<div class="upload-pre-item"><a href="' + src + '" target="_blank"><img src="' + src + '"/></a></div>'
+                                );
+                            } else {
+                                updateAlert(data.info);
+                                setTimeout(function(){
+                                    $('#top-alert').find('button').click();
+                                },1500);
+                            }
+                        }
+                    </script>
+                </div>
+            </div>
+
+            <div class="form-item" >
+                <label class="item-label">轮播跳转<span class="check-tips"></span></label>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" value="1" name="jump" checked>商品
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="2" name="jump">URL
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-item" id="goodsid_area">
+                <label class="item-label required">商品ID<span class="check-tips">(也就是商品编号)</span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="goods_id">
+                </div>
+            </div>
+            
+            <div class="form-item" style="display: none;" id="url_area">
+                <label class="item-label required">URL<span class="check-tips">(完整的链接地址)</span></label>
+                <div class="controls">
+                    <input type="text" class="text input-large" name="url">
+                </div>
+            </div>
+
+
+            <div class="form-item">
+                <label class="item-label">轮播状态<span class="check-tips"></span></label>
+                <div class="controls">
+                    <label class="radio">
+                        <input type="radio" value="1" name="status" checked>启用
+                    </label>
+                    <label class="radio">
+                        <input type="radio" value="0" name="status">禁用
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-item cf">
+                <button class="btn submit-btn ajax-post hidden" id="submit" type="submit" target-form="form-horizontal">确 定</button>
+                <a class="btn btn-return" onclick="javascript:history.back(-1);return false;">返 回</a>
+            </div>
+        </form>
+    </div>
+    </div>
+</block>
+<block name="script">
+    <script type="text/javascript">
+        $(function(){
+            $("[name='jump']").change(function(){
+                var value = $(this).val();
+                if(value == 1){
+                    $("#url_area").hide();
+                    $("#goodsid_area").show();
+                }else{
+                    $("#url_area").show();
+                    $("#goodsid_area").hide();
+                }
+            });
+        });
+        highlight_subnav("{:U('Goods/focus')}");
+    </script>
+</block>
