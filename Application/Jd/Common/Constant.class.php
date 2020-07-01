@@ -5,6 +5,8 @@ class Constant{
     const PRODUCT_INFO = "jd_shopping_product_info_";
     //首页
     const HOME_INFO = "shopping_home_jd";
+    const ACT_INFO = "jd_shopping_act_info_";
+
     //主题列表
     const THEME_LIST = "jd_shopping_theme_list_";
     //主题商品列表
