@@ -57,6 +57,20 @@ class Redis{
         return $redis->get($key);
     }
 
+    //首页标签缓存 10分钟-----全平台通用
+    public static function setActivityInfo($value){
+        $key = Constant::ACT_INFO;
+        $redis = DI::get("redis");
+        $redis->set($key,$value,1800);
+    }
+
+    //读取首页缓存-----全平台通用
+    public static function getActivityInfo(){
+        $key = Constant::ACT_INFO;
+        $redis = DI::get("redis");
+        return $redis->get($key);
+    }
+
     //主题缓存 30分钟------全平台通用
     public static function setThemeList($data,$k){
         $key = Constant::THEME_LIST.$k;
