@@ -10,6 +10,37 @@ class UserAction extends BaseAction
 {
 
     /**
+     * 静默登录
+     * @param string $code
+     * @return array
+     */
+    public function wechatStart($code = '') {
+        $config = [
+            'appid' => 'wx4c5be752eac43c28',
+            'secret' => 'b91bc67eb0ee15511462921d5b320ee4',
+            'grant_type' => 'authorization_code',
+            'js_code' => '',
+        ];
+        $config['js_code'] = $code;
+
+        $url = 'https://api.weixin.qq.com/sns/jscode2session?';
+        $url .= http_build_query($config);
+        list($http, $data) = get_curl_data($url);
+        $data = json_decode($data, true);
+        if ($http['http_code'] != 200 || empty($data['openid']) || empty($data['session_key'])) {
+            return ['code' => 1, 'msg' => '执行失败'];
+        }
+
+        $params['uid'] = -1;
+        $params['platformId'] = 3;
+        $params['platform'] = 'zq';
+        $params['device_type'] = 'mini';
+        $data['token'] = think_encrypt(json_encode($params), "QGLGKU");
+        $data['uid'] = -1;
+        return ['code' => 0, 'msg' => 'success', 'data' => $data];
+    }
+
+    /**
      * 获取结算弹窗数据
      * @param array $paramData
      * @return mixed
@@ -86,6 +117,7 @@ class UserAction extends BaseAction
      * @param $uid
      * @param $nickname
      * @param $avatar
+     * @return mixed
      */
     public function checkUserBaseInfo($uid, $nickname, $avatar) {
         $jdUserModel = new JdUserModel();
@@ -130,6 +162,89 @@ class UserAction extends BaseAction
         return ['提现失败,操作失败', 1];
     }
 
+    /**
+     * 通过openid和unionid获取用户信息
+     * 如果没有，则创建用户
+     * @param array $userInfo
+     * @param int $parent_id
+     * @return int|mixed
+     */
+    public function wechatLogin($userInfo = [], $parent_id = 0) {
+        $openid = empty($userInfo['openId']) ? 0 : $userInfo['openId'];
+        $unionid = empty($userInfo['unionId']) ? 0 : $userInfo['unionId'];
 
+        if (!$openid || !$unionid) {
+            return 10; //失败
+        }
 
+        $params = [];
+        $jdUserModel = new JdUserModel();
+        $userRes = $jdUserModel->getUserDataByWechat($openid, $unionid);
+        if ($userRes) {
+            $params = [
+                'uid' => $userRes['id'],
+                'nickname' => $userRes['nickname'],
+                'avatar' => $userRes['avatar'],
+                'channel' => 3,
+                'platform' => 'zq',
+                'platformId' => 3,
+                'device_type' => 'mini',
+            ];
+        } else {
+            $avatar = $userInfo['avatarUrl'];
+
+            $url = YOUTH_API.'/Shop/uploadAvatar';
+            $url .= "?unionid={$unionid}&avatar={$avatar}";
+            $result = file_get_contents($url);
+
+            $res = json_decode($result, 1);
+            if($res && $res['code'] == 1){
+                $avatar = $res['data'];
+            }
+
+            $data = [
+                'user_id' => 0,
+                'parent_id' => $parent_id,
+                'nickname' => $userInfo['nickName'],
+                'avatar' => $avatar,
+                'openid' => $openid,
+                'unionid' => $unionid,
+                'channel' => 3,
+                'add_time' => time(),
+            ];
+            $id =  $jdUserModel->setUserDataByWechat($data);
+            if($id){
+                $params = [
+                    'uid' => $id,
+                    'nickname' => $userInfo['nickName'],
+                    'avatar' => $avatar,
+                    'channel' => 3,
+                    'platform' => 'zq',
+                    'platformId' => 3,
+                    'device_type' => 'mini',
+                ];
+            }
+        }
+
+        if($params){
+            $token = think_encrypt(json_encode($params), "QGLGKU");
+
+            $GLOBALS["userId"] = $params['uid'];
+            $GLOBALS["platform"] = $params["platform"];
+            $GLOBALS["platformId"] = $params["platformId"];
+            $GLOBALS["token"] = $token;
+            $GLOBALS["userInfo"] = $params;
+            $GLOBALS["openid"] = $openid;
+            $GLOBALS["unionid"] = $unionid;
+
+            return [
+                'token' => $token,
+                'uid' => $params['uid'],
+                'nickname' => $params['nickname'],
+                'avatar' => $params['avatar']
+            ];
+        } else {
+            return 20; //失败
+        }
+    }
 }
