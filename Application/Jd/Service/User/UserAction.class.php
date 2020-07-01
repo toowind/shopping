@@ -16,8 +16,8 @@ class UserAction extends BaseAction
      */
     public function wechatStart($code = '') {
         $config = [
-            'appid' => 'wx4c5be752eac43c28',
-            'secret' => 'b91bc67eb0ee15511462921d5b320ee4',
+            'appid' => 'wxf5e4a55271562c73',
+            'secret' => 'd76e6d15463b98df4528e256b926f32c',
             'grant_type' => 'authorization_code',
             'js_code' => '',
         ];

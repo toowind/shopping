@@ -81,9 +81,13 @@ class wechatLogin extends BaseController
         if(empty($dataObj)){
             return 5; //aes 解密失败 3
         }
-        if( $dataObj['watermark']['appid'] != 'wx4c5be752eac43c28' ){
+//        if( $dataObj['watermark']['appid'] != 'wx4c5be752eac43c28' ){
+//            return 6; //aes 解密失败 4
+//        }
+        if( $dataObj['watermark']['appid'] != 'wxf5e4a55271562c73' ){
             return 6; //aes 解密失败 4
         }
+
         if(!$dataObj['unionId']){
             return 7; //aes 解密失败 5
         }
