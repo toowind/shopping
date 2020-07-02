@@ -21,10 +21,10 @@ define('APP_DEBUG', true );
 
 define('YOUTH_API', 'https://kandian.youth.cn');
 
-define('FXK_DB_HOST', 'rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com'); // 服务器地址
+define('FXK_DB_HOST', '127.0.0.1'); // 服务器地址
 define('FXK_DB_NAME', 'shop_fxk'); // 数据库名
-define('FXK_DB_USER', 'shop_fxk'); // 用户名
-define('FXK_DB_PWD', 'RWEGRTEt3DFGrtHGJ5DFGwexF'); // 密码
+define('FXK_DB_USER', 'root'); // 用户名
+define('FXK_DB_PWD', '123456'); // 密码
 define('FXK_DB_PREFIX', 'fxk_'); // 数据库表前缀
 
 return array(
