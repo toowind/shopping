@@ -55,7 +55,6 @@ class BaseController extends Controller{
             $token = self::$_token;
             $userInfo = think_decrypt($token,'QGLGKU');
             $userInfo = json_decode($userInfo,true);
-            var_dump($userInfo);
             if(empty($userInfo) || !isset($userInfo["uid"])){
                 header('Content-Type:application/json; charset=utf-8');
                 Response::outPutFail(-3,"请重新登录");
