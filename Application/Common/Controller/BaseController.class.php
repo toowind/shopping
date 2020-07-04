@@ -58,6 +58,9 @@ class BaseController extends Controller{
             $userInfo = json_decode($userInfo,true);
             file_put_contents('./log.txt', json_encode($userInfo).PHP_EOL, FILE_APPEND);
 
+            if(!isset($userInfo["uid"])){
+                $userInfo["uid"] = -1;
+            }
             if(empty($userInfo) || !isset($userInfo["uid"])){
                 header('Content-Type:application/json; charset=utf-8');
                 Response::outPutFail(-3,"请重新登录");
