@@ -1,6 +1,6 @@
 <?php
 /**
- * 京东分销订单表
+ * 京东分销用户表
  */
 
 namespace Order\Model;
@@ -15,7 +15,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function getUserData($uid = 0) {
-        return M('user', 'fxk_', $this->db_config)->where(['uid' => $uid])->find();
+        return M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->find();
     }
 
     /**
@@ -28,12 +28,22 @@ class JdUserModel extends BaseModel
     }
 
     /**
+     * 更新用户数据
+     * @param int $uid
+     * @param array $save
+     * @return mixed
+     */
+    public function updateData($uid = 0, $save = []) {
+        return M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->save($save);
+    }
+
+    /**
      * 更新结算显示时间
      * @param int $uid
      * @return mixed
      */
     public function updateOrderShowTime($uid = 0) {
-        return M('user', 'fxk_', $this->db_config)->where(['uid' => $uid])->save(['order_show_time' => date('Y-m-d')]);
+        return M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->save(['order_show_time' => date('Y-m-d')]);
     }
 
     /**
@@ -47,7 +57,7 @@ class JdUserModel extends BaseModel
         $save = [
             'now_money' => 0, //全部取现
         ];
-        $m1 = M('user', 'fxk_', $this->db_config)->where(['uid' => $uid])->save($save);
+        $m1 = M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->save($save);
 
         $install = [
             'uid' => $uid,
@@ -63,5 +73,25 @@ class JdUserModel extends BaseModel
             return false;
         }
     }
+
+    /**
+     * 获取用户信息
+     * @param int $openid
+     * @param int $unionid
+     * @return mixed
+     */
+    public function getUserDataByWechat($openid = 0, $unionid = 0) {
+        return M('user', 'fxk_', $this->db_config)->where(['openid' => $openid, 'unionid' => $unionid])->find();
+    }
+
+    /**
+     * 保存用户信息
+     * @param $data
+     * @return mixed
+     */
+    public function setUserDataByWechat($data){
+        return M('user', 'fxk_', $this->db_config)->add($data);
+    }
+
 
 }
