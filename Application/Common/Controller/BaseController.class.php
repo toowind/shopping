@@ -42,9 +42,9 @@ class BaseController extends Controller{
         if (empty($data)){
           exit(json_encode(array("status"=>-1,"info"=>"参数不全")));
         }
-//       if(empty($data["token"])){
-//           exit(json_encode(array("status"=>-2,"info"=>"退出重新登录")));
-//       }
+       if(empty($data["token"])){
+           exit(json_encode(array("status"=>-2,"info"=>"退出重新登录")));
+       }
         self::$_param =  json_decode($data["data"],true);
         self::$_token = $data["token"];
 
@@ -55,10 +55,10 @@ class BaseController extends Controller{
             $token = self::$_token;
             $userInfo = think_decrypt($token,'QGLGKU');
             $userInfo = json_decode($userInfo,true);
-//            if(empty($userInfo) || !isset($userInfo["uid"])){
-//                header('Content-Type:application/json; charset=utf-8');
-//                Response::outPutFail(-3,"请重新登录");
-//            }
+            if(empty($userInfo) || !isset($userInfo["uid"])){
+                header('Content-Type:application/json; charset=utf-8');
+                Response::outPutFail(-3,"请重新登录");
+            }
             if(empty($userInfo["platformId"]) || empty($userInfo["platform"])){
                 header('Content-Type:application/json; charset=utf-8');
                 Response::outPutFail(-4,"请退出重新登~");
