@@ -56,7 +56,7 @@ class BaseController extends Controller{
             file_put_contents('./log.txt', $token.PHP_EOL, FILE_APPEND);
             $userInfo = think_decrypt($token,'QGLGKU');
             $userInfo = json_decode($userInfo,true);
-            file_put_contents('./log.txt', $userInfo.PHP_EOL, FILE_APPEND);
+            file_put_contents('./log.txt', json_encode($userInfo).PHP_EOL, FILE_APPEND);
 
             if(empty($userInfo) || !isset($userInfo["uid"])){
                 header('Content-Type:application/json; charset=utf-8');
