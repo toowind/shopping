@@ -42,9 +42,9 @@ class BaseController extends Controller{
         if (empty($data)){
           exit(json_encode(array("status"=>-1,"info"=>"参数不全")));
         }
-       if(empty($data["token"])){
-           exit(json_encode(array("status"=>-2,"info"=>"退出重新登录")));
-       }
+//       if(empty($data["token"])){
+//           exit(json_encode(array("status"=>-2,"info"=>"退出重新登录")));
+//       }
         self::$_param =  json_decode($data["data"],true);
         self::$_token = $data["token"];
 
