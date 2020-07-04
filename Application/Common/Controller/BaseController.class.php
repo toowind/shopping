@@ -55,10 +55,10 @@ class BaseController extends Controller{
             $token = self::$_token;
             $userInfo = think_decrypt($token,'QGLGKU');
             $userInfo = json_decode($userInfo,true);
-            if(empty($userInfo) || !isset($userInfo["uid"])){
-                header('Content-Type:application/json; charset=utf-8');
-                Response::outPutFail(-3,"请重新登录");
-            }
+//            if(empty($userInfo) || !isset($userInfo["uid"])){
+//                header('Content-Type:application/json; charset=utf-8');
+//                Response::outPutFail(-3,"请重新登录");
+//            }
             if(empty($userInfo["platformId"]) || empty($userInfo["platform"])){
                 header('Content-Type:application/json; charset=utf-8');
                 Response::outPutFail(-4,"请退出重新登~");
