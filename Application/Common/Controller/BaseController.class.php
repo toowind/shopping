@@ -20,10 +20,10 @@ class BaseController extends Controller{
         $this->checkLogin();
     }
 
-   /** MiddleWare **/
+    /** MiddleWare **/
     public static function DI(){
         DI::set("http",function(){
-           return new HttpClient();
+            return new HttpClient();
         });
 
         DI::set("appConf",function (){
@@ -40,11 +40,11 @@ class BaseController extends Controller{
         header('Content-Type:application/json; charset=utf-8');
         $data = array_merge($_POST,$_GET);
         if (empty($data)){
-          exit(json_encode(array("status"=>-1,"info"=>"参数不全")));
+            exit(json_encode(array("status"=>-1,"info"=>"参数不全")));
         }
-       if(empty($data["token"])){
-           exit(json_encode(array("status"=>-2,"info"=>"退出重新登录")));
-       }
+        if(empty($data["token"])){
+            exit(json_encode(array("status"=>-2,"info"=>"退出重新登录")));
+        }
         self::$_param =  json_decode($data["data"],true);
         self::$_token = $data["token"];
 
