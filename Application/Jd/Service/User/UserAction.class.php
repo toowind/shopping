@@ -171,7 +171,8 @@ class UserAction extends BaseAction
      */
     public function wechatLogin($userInfo = [], $parent_id = 0) {
         $openid = empty($userInfo['openId']) ? 0 : $userInfo['openId'];
-        $unionid = empty($userInfo['unionId']) ? 0 : $userInfo['unionId'];
+//        $unionid = empty($userInfo['unionId']) ? 0 : $userInfo['unionId'];
+        $unionid = $openid;
 
         if (!$openid || !$unionid) {
             return 10; //失败
