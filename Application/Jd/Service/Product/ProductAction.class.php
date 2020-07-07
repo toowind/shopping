@@ -198,10 +198,7 @@ class ProductAction extends BaseAction {
             'unionId'=>self::$jdunionId,
             'positionId'=> 15510155676
         );
-        var_dump($param);
         $data = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
-        var_dump($data);
-        die();
         if($data["code"] != 200 ){
             Log::write(json_encode($data),'HTTP_ERROR_PDD');
             Exception::throwException(Exception::HTTP_ERROR);
@@ -210,8 +207,8 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($data["promotionInfo"][$curl]),'HTTP_ERROR_PDD');
             Exception::throwException(Exception::HTTP_ERROR);
         }
-        $param['positionId'] = $GLOBALS["userId"].'_self_'.$device_type;
-        $dataSelf = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
+//        $param['positionId'] = $GLOBALS["userId"].'_self_'.$device_type;
+//        $dataSelf = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
         $ResponseData["purchaseUrl"] = $data["data"]["shortURL"];
 //        $ResponseData["awaken_app_url"] = $data["promotionInfo"][$curl]["deepLink"];
 //        $ResponseData["purchaseUrl_self"] = $dataSelf["promotionInfo"][$curl]["resultUrl"];
