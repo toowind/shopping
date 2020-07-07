@@ -176,18 +176,18 @@ class ProductAction extends BaseAction {
     }
 
     public static function getConvertUrls($data){
-        $device_type = $GLOBALS["userInfo"]["device_type"];
-        if($device_type){
-            if(strtolower($device_type)=='android'){
-                $device_type = 'android';
-            }elseif(strtolower($device_type)=='ios'){
-                $device_type = 'ios';
-            }elseif(strtolower($device_type)=='mini'){
-                $device_type = 'mini';
-            }
-        }else{
-            $device_type = 'android';
-        }
+//        $device_type = $GLOBALS["userInfo"]["device_type"];
+//        if($device_type){
+//            if(strtolower($device_type)=='android'){
+//                $device_type = 'android';
+//            }elseif(strtolower($device_type)=='ios'){
+//                $device_type = 'ios';
+//            }elseif(strtolower($device_type)=='mini'){
+//                $device_type = 'mini';
+//            }
+//        }else{
+//            $device_type = 'android';
+//        }
 
         $catesName = ['0_200'=>'热卖','0_1'=>'精选','0_2'=>'大咖推荐','0_10'=>'9.9专区','0_25'=>'生活超市','0_27'=>'居家日用','0_26'=>'母婴','0_22'=>'爆品'];
         $curl = $data["url"];
