@@ -32,6 +32,7 @@ class ProductAction extends BaseAction {
     private static $url = 'https://open.qqbuy.com/api';
     private static $ddxUrl = 'http://api.tbk.dingdanxia.com';
     private static $apikey = 'ag3U6pwUP4UbylHm97OImTlZoR01BXtD';
+    private static $jdunionId = '1002889981';
 
         //所有秒杀配置key
     private static $seckillTypeList = ["ONE_SECKILL","TEN_SECKILL","CLEARANCE_PRICE","RETURN_COMMISSION_RATE","SECKILL_COMMISSION_RATE"];
@@ -192,6 +193,91 @@ class ProductAction extends BaseAction {
         $curl = $data["url"];
         $materialUrls[0] = urlencode($curl);
         $param = array(
+            'apikey'=>self::$apikey,
+            'materialId'=>$materialUrls,
+            'unionId'=>self::$jdunionId,
+            'positionId'=> $GLOBALS["userId"].'_'.$device_type
+        );
+        $data = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
+        if($data["code"] != 200 ){
+            Log::write(json_encode($data),'HTTP_ERROR_PDD');
+            Exception::throwException(Exception::HTTP_ERROR);
+        }
+        if($data["promotionInfo"][$curl]["code"] != 200){
+            Log::write(json_encode($data["promotionInfo"][$curl]),'HTTP_ERROR_PDD');
+            Exception::throwException(Exception::HTTP_ERROR);
+        }
+        $param['positionId'] = $GLOBALS["userId"].'_self_'.$device_type;
+        $dataSelf = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
+        $ResponseData["purchaseUrl"] = $data["data"]["shortURL"];
+//        $ResponseData["awaken_app_url"] = $data["promotionInfo"][$curl]["deepLink"];
+//        $ResponseData["purchaseUrl_self"] = $dataSelf["promotionInfo"][$curl]["resultUrl"];
+//        $ResponseData["awaken_app_url_self"] = $dataSelf["promotionInfo"][$curl]["deepLink"];
+//        $ResponseData["goods_id"] = $dataSelf["promotionInfo"][$curl]["entity"]["skuId"];
+//        $ResponseData["goods_name"] = $dataSelf["promotionInfo"][$curl]["entity"]["skuName"];
+//        $ResponseData["img"] = $dataSelf["promotionInfo"][$curl]["entity"]["imgUrl"];
+//        $ResponseData["price"] = $dataSelf["promotionInfo"][$curl]["entity"]["price"];
+//        $ResponseData["discount"] = $dataSelf["promotionInfo"][$curl]["entity"]["discount"];
+//        $ResponseData["is_pg"] = $dataSelf["promotionInfo"][$curl]["entity"]["isPg"];
+//        $ResponseData["is_coupon"] = $dataSelf["promotionInfo"][$curl]["entity"]["isCoupon"];
+//        $ResponseData["discountPrice"] = $dataSelf["promotionInfo"][$curl]["entity"]["discountPrice"];
+//        $ResponseData["return_cash"] = bcmul($dataSelf["promotionInfo"][$curl]["entity"]["commission"],self::getUserPercent(),2);
+
+        if ($ResponseData["is_pg"]){
+            if($ResponseData["is_coupon"]){
+                $priceName = '券后价';
+            }else{
+                $priceName = '拼购价';
+            }
+        }else{
+            if($ResponseData["is_coupon"]){
+                $priceName = '券后价';
+            }else{
+                $priceName = '超低价';
+            }
+        }
+        $ResponseData["priceName"] = $priceName;
+
+        //商品详情页缓存key
+        $key = $ResponseData["goods_id"].'_0_jd';
+        //查询缓存
+        $goodsInfo = Redis::getProductInfo($key);
+        $goodsData = json_decode($goodsInfo,true);
+        $ResponseData["goods_category"] = $catesName[$goodsData["goods_category"]];
+        if(!$ResponseData["goods_category"]){
+            $sql = "select bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where bar_code='".$ResponseData["goods_id"]."' and source_id=1 order by id desc limit 1";
+            $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
+            if($mysqli){
+                $result = mysqli_query($mysqli, $sql);
+                $goodsInfo = mysqli_fetch_assoc($result);
+                //店铺名称
+                $ResponseData["goods_category"] = $goodsInfo["cate_id"];
+                $ResponseData["cate_id_no"] = $goodsInfo["cate_id_no"];
+            }
+        }
+
+        return $ResponseData;
+    }
+
+    public static function getConvertUrlsbak($data){
+        $device_type = $GLOBALS["userInfo"]["device_type"];
+        if($device_type){
+            if(strtolower($device_type)=='android'){
+                $device_type = 'android';
+            }elseif(strtolower($device_type)=='ios'){
+                $device_type = 'ios';
+            }elseif(strtolower($device_type)=='mini'){
+                $device_type = 'mini';
+            }
+        }else{
+            $device_type = 'android';
+        }
+
+        $catesName = ['0_200'=>'热卖','0_1'=>'精选','0_2'=>'大咖推荐','0_10'=>'9.9专区','0_25'=>'生活超市','0_27'=>'居家日用','0_26'=>'母婴','0_22'=>'爆品'];
+        $curl = $data["url"];
+        $materialUrls[0] = urlencode($curl);
+        $param = array(
+            'apikey'=>self::$apikey,
             'materialUrls'=>$materialUrls,
             'userTag'=> $GLOBALS["userId"].'_'.$device_type
         );
