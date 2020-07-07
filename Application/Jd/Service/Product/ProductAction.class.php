@@ -856,6 +856,8 @@ class ProductAction extends BaseAction {
     //查询商品列表----不区分平台
     public static function getGoodsListByKeyword($paramData = array()){
         $RequestData = array();
+        $RequestData["apikey"] = self::$apikey;
+
         //根据关键词搜索
         if(!empty($paramData["keyword"])){
             $keyword = $paramData["keyword"];
@@ -882,36 +884,31 @@ class ProductAction extends BaseAction {
         if(isset($paramData["sort"]))   $RequestData["sort"] = $paramData["sort"];
 
         //过滤标签
-        if(isset($paramData["skuTags"]))   $RequestData["skuTags"] = $paramData["skuTags"];
+//        if(isset($paramData["skuTags"]))   $RequestData["skuTags"] = $paramData["skuTags"];
 
         //读取缓存
         $key = md5(json_encode($RequestData));
         $ResponseData = Redis::getSearch($key);
         $user_percent = self::getUserPercent();
-        if(!empty($ResponseData)){
-            $ResponseData = json_decode($ResponseData,true);
-//            $ResponseData = array(
-//                array("goods_id"=>"68065588457", "goods_name"=>"奕辰抽纸原生木浆餐巾纸柔顺3层 10包装"),
-//                array("goods_id"=>"52846490265", "goods_name"=>"植护原木纸巾抽纸卫生纸家用餐巾纸婴儿面巾纸巾S码实惠装 加厚4层60抽*10包"),
-//                array("goods_id"=>"68065588457", "goods_name"=>"奕辰抽纸原生木浆餐巾纸柔顺3层 10包装")
-//            );
-            foreach ($ResponseData as $k=>$item){
-                if(!isset($item['user_percent'])){
-                    $ResponseData[$k]['user_percent'] = $user_percent;
-                }
-            }
-            $key = 'goods_id';
-            $ResponseData = self::assoc_unique($ResponseData, $key);
-            return $ResponseData;
-        }
+//        if(!empty($ResponseData)){
+//            $ResponseData = json_decode($ResponseData,true);
+//            foreach ($ResponseData as $k=>$item){
+//                if(!isset($item['user_percent'])){
+//                    $ResponseData[$k]['user_percent'] = $user_percent;
+//                }
+//            }
+//            $key = 'goods_id';
+//            $ResponseData = self::assoc_unique($ResponseData, $key);
+//            return $ResponseData;
+//        }
 
-        $rdata = self::http_get(self::$url.'/goods/queryGoodsByKeywordForApi',$RequestData);
+        $rdata = self::http_get(self::$url.'/jd/query_goods',$RequestData);
         $data = json_decode($rdata,true);
         if($data["code"] != 200){
             Log::write($data,'ERROR');
             return array();
         }
-        $goodsList = !empty($data["goodsList"]) ? $data["goodsList"] : array();
+        $goodsList = !empty($data["data"]) ? $data["data"] : array();
         if(empty($goodsList)){
             return array();
         }
