@@ -30,7 +30,10 @@ class ProductAction extends BaseAction {
     );
     //京东请求地址
     private static $url = 'https://open.qqbuy.com/api';
-    //所有秒杀配置key
+    private static $ddxUrl = 'http://api.tbk.dingdanxia.com';
+    private static $apikey = 'ag3U6pwUP4UbylHm97OImTlZoR01BXtD';
+
+        //所有秒杀配置key
     private static $seckillTypeList = ["ONE_SECKILL","TEN_SECKILL","CLEARANCE_PRICE","RETURN_COMMISSION_RATE","SECKILL_COMMISSION_RATE"];
     //秒杀商品key
     private static $seckillGoodsKey = ["ONE_SECKILL","TEN_SECKILL","CLEARANCE_PRICE"];
@@ -420,6 +423,146 @@ class ProductAction extends BaseAction {
 
     //查询商品列表----不区分平台
     public static function getGoodsList($paramData = array()){
+        $x = [
+            "0_200"=>"31",//热卖
+            "0_1"=>"32",//精选
+            "0_2"=>"23",//大咖推荐
+            "0_10"=>"10",//9.9专区
+            "0_25"=>"25",//生活超市
+            "0_27"=>"27",//居家日用
+            "0_26"=>"26",//母婴
+            "0_22"=>"22",//爆品
+        ];
+        $RequestData = array();
+        $RequestData["apikey"] =  self::$apikey;
+        //根据标签id搜索
+        if(isset($paramData["opt_id"]) && $paramData["opt_id"] !='')  $RequestData["eliteId"] = intval($x[$paramData["opt_id"]]);
+        //page默认1
+        if(isset($paramData["page"])) $RequestData["pageIndex"] = $paramData["page"];
+        //page_size 默认100
+        if(isset($paramData["page_size"]))   $RequestData["pageSize"] = $paramData["page_size"];
+
+        $user_percent = self::getUserPercent();
+        //读取缓存
+        $key_goods_list = md5(json_encode($paramData));
+        $ResponseData = Redis::getSearch($key_goods_list);
+//        if(!empty($ResponseData)){
+//            $ResponseData = json_decode($ResponseData,true);
+//            foreach ($ResponseData as $k=>$item){
+//                if(!isset($item['user_percent'])){
+//                    $ResponseData[$k]['user_percent'] = $user_percent;
+//                }
+//                if($item['goods_id']=='1207624000'){
+//                    unset($ResponseData[$k]);
+//                }
+//            }
+//            sort($ResponseData);
+//            $key = 'goods_id';
+//            $ResponseData = self::distinct($ResponseData, $RequestData["pageIndex"], $RequestData["cid3"], $RequestData["pageSize"]);
+//            $ResponseData = self::assoc_unique($ResponseData, $key);
+//            if (count($RequestData)){
+//                return $ResponseData;
+//            }
+//        }
+
+        $data = self::http_get(self::$ddxUrl.'/jd/query_jingfen_goods', $RequestData);
+        $data = json_decode($data,true);
+        $page_size = $RequestData["pageSize"];
+        $start = ($RequestData["pageIndex"]-1)*$page_size;
+//        if($RequestData["cid3"]=='0_22' || $data["code"]!=200){
+        if($data["code"]!=200){
+            $sql = "select distinct bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where cate_id_no='".$RequestData["cid3"]."' AND source_id=1 AND price<10 and commission_share>=20 order by order_count_30days desc,id desc limit {$start}, {$page_size}";
+            $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
+            if($mysqli){
+                $result = mysqli_query($mysqli, $sql);
+                $key = 0;
+                $responseData = array();
+                $ResponseData = array();
+                while ($goodsInfo = mysqli_fetch_assoc($result)){
+                    $responseData[$key]["goods_id"] = $ResponseData[$key]["goods_id"] = isset($goodsInfo["bar_code"]) ? $goodsInfo["bar_code"] : 0;
+                    $responseData[$key]["shop_id"] = $ResponseData[$key]["shop_id"] = isset($goodsInfo["shop_id"]) ? $goodsInfo["shop_id"] : 0;
+                    $responseData[$key]["goods_name"] = $ResponseData[$key]["goods_name"] = isset($goodsInfo["store_name"]) ? $goodsInfo["store_name"] : "";
+                    $responseData[$key]["goods_thumbnail_url"] = $ResponseData[$key]["goods_thumbnail_url"] = isset($goodsInfo["image"]) ? $goodsInfo["image"] : "";
+
+                    //优惠券金额
+                    $coupon_discount = isset($goodsInfo["coupon_discount"]) ? $goodsInfo["coupon_discount"] : 0;
+                    $responseData[$key]["coupon_discount"] = $ResponseData[$key]["coupon_discount"] = $coupon_discount;
+
+                    //价格
+                    $min_group_price = isset($goodsInfo["ot_price"]) ? $goodsInfo["ot_price"] : 0;
+                    $responseData[$key]["min_group_price"] = $ResponseData[$key]["min_group_price"] = $min_group_price;
+
+                    //京东佣金比例 百分比
+                    $promotion_rate = bcdiv($goodsInfo["commission_share"],100,2);
+                    $responseData[$key]["promotion_rate"] = $ResponseData[$key]["promotion_rate"] = $promotion_rate;
+                    //京东佣金
+                    //单价  减去 优惠券
+                    $responseData[$key]["present_price"] = $ResponseData[$key]["present_price"] = isset($goodsInfo["price"]) ? $goodsInfo["price"] : 0;
+                    $responseData[$key]["isCoupon"] = $ResponseData[$key]["isCoupon"] = isset($goodsInfo["is_coupon"]) ? $goodsInfo["is_coupon"] : 0;
+                    $responseData[$key]["isPg"] = $ResponseData[$key]["isPg"] = isset($goodsInfo["is_pg"]) ? $goodsInfo["is_pg"] : 0;
+                    $responseData[$key]["discountPrice"] = $ResponseData[$key]["discountPrice"] = isset($goodsInfo["price"]) ? $goodsInfo["price"] : 0;
+                    $responseData[$key]["pingouPrice"] = $ResponseData[$key]["pingouPrice"] = isset($goodsInfo["pingou_price"]) ? $goodsInfo["pingou_price"] : 0;
+                    $commission = isset($goodsInfo["commission"]) ? $goodsInfo["commission"] : 0;
+//            $ResponseData[$key]["return_cash"] = bcmul($commission,0.1, 2);
+                    $responseData[$key]["return_cash_total"] = $ResponseData[$key]["return_cash_total"] = $ResponseData[$key]["return_cash"] = $commission;
+                    $responseData[$key]["comments"] = $ResponseData[$key]["comments"] = isset($goodsInfo["comments"]) ? $goodsInfo["comments"] : 0;
+                    $responseData[$key]["goodCommentsShare"] = $ResponseData[$key]["goodCommentsShare"] = isset($goodsInfo["goods_comments_share"]) ? $goodsInfo["goods_comments_share"] : 0;
+                    $responseData[$key]["orderCount30days"] = $ResponseData[$key]["orderCount30days"] = isset($goodsInfo["order_count_30days"]) ? $goodsInfo["order_count_30days"] : 0;
+
+
+
+                    if ($ResponseData[$key]["isPg"]){
+                        if($ResponseData[$key]["isCoupon"]){
+                            $priceName = '券后价';
+                        }else{
+                            $priceName = '拼购价';
+                        }
+                    }else{
+                        if($ResponseData[$key]["isCoupon"]){
+                            $priceName = '券后价';
+                        }else{
+                            $priceName = '超低价';
+                        }
+                    }
+                    $responseData[$key]["priceName"] = $ResponseData[$key]["priceName"] = $priceName;
+                    $ResponseData[$key]['user_percent'] = $user_percent;
+                    $key++;
+                }
+                mysqli_free_result($goodsInfo);
+                mysqli_close($mysqli);
+                Redis::setSearch($key_goods_list,json_encode($responseData));
+                $key_uni = 'shop_id';
+//                $ResponseData = self::distinct($ResponseData, $RequestData["pageIndex"], $RequestData["cid3"], $RequestData["pageSize"]);
+                $ResponseData = self::assoc_unique($ResponseData, $key_uni);
+                return $ResponseData;
+            }
+        }
+        $goodsList = !empty($data["data"]) ? $data["data"] : array();
+        if(empty($goodsList)){
+            return array();
+        }
+        //整理数据
+        $ResponseData = self::ArrangementParam($goodsList);
+        Redis::setSearch($key_goods_list,json_encode($ResponseData));
+        if(!empty($ResponseData) && count($ResponseData)){
+            foreach ($ResponseData as $k=>$item){
+
+                if(!isset($item['user_percent'])){
+                    $ResponseData[$k]['user_percent'] = $user_percent;
+                }
+                if($item['goods_id']=='1207624000'){
+                    unset($ResponseData[$k]);
+                }
+            }
+            sort($ResponseData);
+        }
+        $key = 'goods_id';
+        $ResponseData = self::distinct($ResponseData, $RequestData["pageIndex"], $RequestData["cid3"], $RequestData["pageSize"]);
+        $ResponseData = self::assoc_unique($ResponseData, $key);
+        return $ResponseData;
+    }
+    //查询商品列表----不区分平台
+    public static function getGoodsListbak($paramData = array()){
         $RequestData = array();
         //根据标签id搜索
         if(isset($paramData["opt_id"]) && $paramData["opt_id"] !='')  $RequestData["cid3"] = $paramData["opt_id"];
@@ -1057,32 +1200,32 @@ VALUES";
 //            }
             $ResponseData[$key]["goods_id"] = isset($val["skuId"]) ? $val["skuId"] : 0;
             $ResponseData[$key]["goods_name"] = isset($val["skuName"]) ? $val["skuName"] : "";
-            $ResponseData[$key]["goods_thumbnail_url"] = isset($val["imgUrl"]) ? $val["imgUrl"] : "";
+            $ResponseData[$key]["goods_thumbnail_url"] = isset($val["imageInfo"]["imageList"][0]["url"]) ? $val["imageInfo"]["imageList"][0]["url"] : "";
 
             //优惠券金额
-            $coupon_discount = isset($val["discount"]) ? $val["discount"] : 0;
+            $coupon_discount = isset($val["couponInfo"]["couponList"]["0"]["discount"]) ? $val["couponInfo"]["couponList"]["0"]["discount"] : 0;
             $ResponseData[$key]["coupon_discount"] = $coupon_discount;
 
             //价格
-            $min_group_price = isset($val["price"]) ? $val["price"] : 0;
+            $min_group_price = isset($val["priceInfo"]["price"]) ? $val["priceInfo"]["price"] : 0;
             $ResponseData[$key]["min_group_price"] = $min_group_price;
 
             //京东佣金比例 百分比
-            $promotion_rate = bcdiv($val["commissionShare"],100,2);
+            $promotion_rate = bcdiv($val["commissionInfo"]["commissionShare"],100,2);
             $ResponseData[$key]["promotion_rate"] = $promotion_rate;
             //京东佣金
             //单价  减去 优惠券
-            $ResponseData[$key]["present_price"] = isset($val["discountPrice"]) ? $val["discountPrice"] : 0;
-            $ResponseData[$key]["isCoupon"] = isset($val["isCoupon"]) ? $val["isCoupon"] : 0;
-            $ResponseData[$key]["isPg"] = isset($val["isPg"]) ? $val["isPg"] : 0;
-            $ResponseData[$key]["discountPrice"] = isset($val["discountPrice"]) ? $val["discountPrice"] : 0;
-            $ResponseData[$key]["pingouPrice"] = isset($val["pingouPrice"]) ? $val["pingouPrice"] : 0;
-            $commission = isset($val["commission"]) ? $val["commission"] : 0;
+            $ResponseData[$key]["present_price"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : ($min_group_price-$coupon_discount);
+            $ResponseData[$key]["isCoupon"] = isset($val["couponInfo"]["couponList"]) ? count($val["couponInfo"]["couponList"]) : 0;
+            $ResponseData[$key]["isPg"] = isset($val["pinGouInfo"]["pingouPrice"]) ? ($val["pinGouInfo"]["pingouPrice"]>0) : 0;
+            $ResponseData[$key]["discountPrice"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : ($min_group_price-$coupon_discount);
+            $ResponseData[$key]["pingouPrice"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : 0;
+            $commission = isset($val["commissionInfo"]["commission"]) ? $val["commissionInfo"]["commission"] : 0;
 //            $ResponseData[$key]["return_cash"] = bcmul($commission,0.1, 2);
             $ResponseData[$key]["return_cash_total"] = $ResponseData[$key]["return_cash"] = $commission;
             $ResponseData[$key]["comments"] = isset($val["comments"]) ? $val["comments"] : 0;
             $ResponseData[$key]["goodCommentsShare"] = isset($val["goodCommentsShare"]) ? $val["goodCommentsShare"] : 0;
-            $ResponseData[$key]["orderCount30days"] = isset($val["orderCount30days"]) ? $val["orderCount30days"] : 0;
+            $ResponseData[$key]["orderCount30days"] = isset($val["inOrderCount30Days"]) ? $val["inOrderCount30Days"] : 0;
 
 
 
