@@ -203,10 +203,10 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($data),'HTTP_ERROR_PDD');
             Exception::throwException(Exception::HTTP_ERROR);
         }
-        if($data["promotionInfo"][$curl]["code"] != 200){
-            Log::write(json_encode($data["promotionInfo"][$curl]),'HTTP_ERROR_PDD');
-            Exception::throwException(Exception::HTTP_ERROR);
-        }
+//        if($data["promotionInfo"][$curl]["code"] != 200){
+//            Log::write(json_encode($data["promotionInfo"][$curl]),'HTTP_ERROR_PDD');
+//            Exception::throwException(Exception::HTTP_ERROR);
+//        }
 //        $param['positionId'] = $GLOBALS["userId"].'_self_'.$device_type;
 //        $dataSelf = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
         $ResponseData["purchaseUrl"] = $data["data"]["shortURL"];
