@@ -191,12 +191,12 @@ class ProductAction extends BaseAction {
 
         $catesName = ['0_200'=>'热卖','0_1'=>'精选','0_2'=>'大咖推荐','0_10'=>'9.9专区','0_25'=>'生活超市','0_27'=>'居家日用','0_26'=>'母婴','0_22'=>'爆品'];
         $curl = $data["url"];
-        $materialUrls[0] = urlencode($curl);
+        $materialUrls = $curl;
         $param = array(
             'apikey'=>self::$apikey,
             'materialId'=>$materialUrls,
             'unionId'=>self::$jdunionId,
-            'positionId'=> $GLOBALS["userId"].'_'.$device_type
+            'positionId'=> 15510155676
         );
         var_dump($param);
         $data = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
