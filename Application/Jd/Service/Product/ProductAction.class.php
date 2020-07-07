@@ -198,6 +198,7 @@ class ProductAction extends BaseAction {
             'unionId'=>self::$jdunionId,
             'positionId'=> $GLOBALS["userId"].'_'.$device_type
         );
+        var_dump($param);
         $data = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
         var_dump($data);
         die();
