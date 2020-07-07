@@ -902,7 +902,7 @@ class ProductAction extends BaseAction {
 //            return $ResponseData;
 //        }
 
-        $rdata = self::http_get(self::$url.'/jd/query_goods',$RequestData);
+        $rdata = self::http_get(self::$ddxUrl.'/jd/query_goods',$RequestData);
         $data = json_decode($rdata,true);
         if($data["code"] != 200){
             Log::write($data,'ERROR');
