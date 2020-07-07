@@ -199,6 +199,8 @@ class ProductAction extends BaseAction {
             'positionId'=> $GLOBALS["userId"].'_'.$device_type
         );
         $data = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$param, 1), true);
+        var_dump($data);
+        die();
         if($data["code"] != 200 ){
             Log::write(json_encode($data),'HTTP_ERROR_PDD');
             Exception::throwException(Exception::HTTP_ERROR);
