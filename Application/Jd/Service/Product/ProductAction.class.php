@@ -225,38 +225,38 @@ class ProductAction extends BaseAction {
 //        $ResponseData["discountPrice"] = $dataSelf["promotionInfo"][$curl]["entity"]["discountPrice"];
 //        $ResponseData["return_cash"] = bcmul($dataSelf["promotionInfo"][$curl]["entity"]["commission"],self::getUserPercent(),2);
 
-        if ($ResponseData["is_pg"]){
-            if($ResponseData["is_coupon"]){
-                $priceName = '券后价';
-            }else{
-                $priceName = '拼购价';
-            }
-        }else{
-            if($ResponseData["is_coupon"]){
-                $priceName = '券后价';
-            }else{
-                $priceName = '超低价';
-            }
-        }
-        $ResponseData["priceName"] = $priceName;
-
-        //商品详情页缓存key
-        $key = $ResponseData["goods_id"].'_0_jd';
-        //查询缓存
-        $goodsInfo = Redis::getProductInfo($key);
-        $goodsData = json_decode($goodsInfo,true);
-        $ResponseData["goods_category"] = $catesName[$goodsData["goods_category"]];
-        if(!$ResponseData["goods_category"]){
-            $sql = "select bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where bar_code='".$ResponseData["goods_id"]."' and source_id=1 order by id desc limit 1";
-            $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
-            if($mysqli){
-                $result = mysqli_query($mysqli, $sql);
-                $goodsInfo = mysqli_fetch_assoc($result);
-                //店铺名称
-                $ResponseData["goods_category"] = $goodsInfo["cate_id"];
-                $ResponseData["cate_id_no"] = $goodsInfo["cate_id_no"];
-            }
-        }
+//        if ($ResponseData["is_pg"]){
+//            if($ResponseData["is_coupon"]){
+//                $priceName = '券后价';
+//            }else{
+//                $priceName = '拼购价';
+//            }
+//        }else{
+//            if($ResponseData["is_coupon"]){
+//                $priceName = '券后价';
+//            }else{
+//                $priceName = '超低价';
+//            }
+//        }
+//        $ResponseData["priceName"] = $priceName;
+//
+//        //商品详情页缓存key
+//        $key = $ResponseData["goods_id"].'_0_jd';
+//        //查询缓存
+//        $goodsInfo = Redis::getProductInfo($key);
+//        $goodsData = json_decode($goodsInfo,true);
+//        $ResponseData["goods_category"] = $catesName[$goodsData["goods_category"]];
+//        if(!$ResponseData["goods_category"]){
+//            $sql = "select bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where bar_code='".$ResponseData["goods_id"]."' and source_id=1 order by id desc limit 1";
+//            $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
+//            if($mysqli){
+//                $result = mysqli_query($mysqli, $sql);
+//                $goodsInfo = mysqli_fetch_assoc($result);
+//                //店铺名称
+//                $ResponseData["goods_category"] = $goodsInfo["cate_id"];
+//                $ResponseData["cate_id_no"] = $goodsInfo["cate_id_no"];
+//            }
+//        }
 
         return $ResponseData;
     }
