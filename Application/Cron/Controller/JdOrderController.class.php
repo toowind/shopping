@@ -174,7 +174,7 @@ class JdOrderController extends Controller
 
                 $order_data = [
                     'date' => date('Y-m-d', ($order_time / 1000)),
-                    'uid' => $uid,
+                    'uid' => ($user_tag>1000000000) ? ($user_tag/100) : $user_tag,
                     'type' => $type, // 1自购 2分享
                     'order_id' => $order_id,
                     'order_type' => $order_type, //订单类型 1 单品订单 2:活动订单
