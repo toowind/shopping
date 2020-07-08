@@ -82,22 +82,38 @@ class ProductAction extends BaseAction {
      * 区分平台
      */
     public static function purchaseUrl($goods_id){
-        $device_type = $GLOBALS["userInfo"]["device_type"];
-        if($device_type){
-            if(strtolower($device_type)=='android'){
-                $device_type = 'android';
-            }elseif(strtolower($device_type)=='ios'){
-                $device_type = 'ios';
-            }elseif(strtolower($device_type)=='mini'){
-                $device_type = 'mini';
-            }
-        }else{
-            $device_type = 'android';
-        }
+//        $device_type = $GLOBALS["userInfo"]["device_type"];
+//        if($device_type){
+//            if(strtolower($device_type)=='android'){
+//                $device_type = 'android';
+//            }elseif(strtolower($device_type)=='ios'){
+//                $device_type = 'ios';
+//            }elseif(strtolower($device_type)=='mini'){
+//                $device_type = 'mini';
+//            }
+//        }else{
+//            $device_type = 'android';
+//        }
         $userTag = $GLOBALS["userId"];
-        $requestdDataSelf['skuId'] = $requestdData['skuId'] = $goods_id;
-        $requestdData['userTag'] = $userTag.'_'.$device_type;
-        $data = self::http_get(self::$url.'/goods/getGoodsPromotionDeepLink',$requestdData);
+        $requestdData['apikey'] = self::$apikey;
+        $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
+        $requestdData['unionId'] = self::$jdunionId;
+        $requestdData['positionId'] = $userTag;
+        $requestdData['pid'] = 'android';
+        $requestdData['subUnionId'] = 'self';
+
+
+
+//
+//
+//
+//
+//
+//        $requestdDataSelf['skuId'] = $requestdData['skuId'] = $goods_id;
+//        $requestdData['userTag'] = $userTag.'_'.$device_type;
+        $data = self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$requestdData);
+        var_dump($data);
+        die();
 
         $requestdDataSelf['userTag'] = $userTag.'_self'.'_'.$device_type;
         $dataSelf = json_decode(self::http_get(self::$url.'/goods/getGoodsPromotionDeepLink',$requestdDataSelf), true);
@@ -147,6 +163,7 @@ class ProductAction extends BaseAction {
             $jump_state = 0;
         }
         $otherinfo = Redis::getProductInfo($key_other);
+        $otherinfo = '';
         if(!empty($otherinfo)){
             $ResponseDataOther = json_decode($otherinfo,true);
             $ResponseData['purchaseUrl'] = $ResponseDataOther['purchaseUrl'];
