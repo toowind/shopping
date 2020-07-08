@@ -99,7 +99,7 @@ class ProductAction extends BaseAction {
         $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
-        $requestdData['pid'] = 'android';
+//        $requestdData['pid'] = 'android';
 //        $requestdData['subUnionId'] = 'self';
 
 
