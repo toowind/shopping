@@ -116,6 +116,7 @@ class JdOrderController extends Controller
 
         $param = [
             'apikey'=>self::$apikey,
+            'key'=>'b57733a7028b090110e11bf2d46338547edf5f6a944d1770e87c9bc2cc2b505abecaf9215aea097a',
             'time' => $time,
             'type' => $type,
             'pageNo' => 1,
