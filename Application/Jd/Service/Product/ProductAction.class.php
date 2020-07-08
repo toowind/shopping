@@ -216,6 +216,22 @@ class ProductAction extends BaseAction {
             Exception::throwException(Exception::HTTP_ERROR);
         }
 
+        $infoparam = array(
+            'apikey'=>self::$apikey,
+            'skuIds'=>$goods_id,
+        );
+
+        $infoData = json_decode(self::http_get(self::$ddxUrl.'/jd/query_goods_promotioninfo',$infoparam, 1), true);
+        if($infoData["code"] != 200 ){
+            Log::write(json_encode($data),'HTTP_ERROR_PDD');
+            Exception::throwException(Exception::HTTP_ERROR);
+        }
+        $skuName = $infoData['data'][0]['goodsName'];
+        $imgUrl = $infoData['data'][0]['imgUrl'];
+        $unitPrice = $infoData['data'][0]['unitPrice'];
+
+
+
 //        if($data["promotionInfo"][$curl]["code"] != 200){
 //            Log::write(json_encode($data["promotionInfo"][$curl]),'HTTP_ERROR_PDD');
 //            Exception::throwException(Exception::HTTP_ERROR);
@@ -227,9 +243,9 @@ class ProductAction extends BaseAction {
 //        $ResponseData["purchaseUrl_self"] = $dataSelf["promotionInfo"][$curl]["resultUrl"];
 //        $ResponseData["awaken_app_url_self"] = $dataSelf["promotionInfo"][$curl]["deepLink"];
         $ResponseData["goods_id"] = $goods_id;
-//        $ResponseData["goods_name"] = $dataSelf["promotionInfo"][$curl]["entity"]["skuName"];
-//        $ResponseData["img"] = $dataSelf["promotionInfo"][$curl]["entity"]["imgUrl"];
-//        $ResponseData["price"] = $dataSelf["promotionInfo"][$curl]["entity"]["price"];
+        $ResponseData["goods_name"] = $skuName;
+        $ResponseData["img"] = $imgUrl;
+        $ResponseData["price"] = $unitPrice;
 //        $ResponseData["discount"] = $dataSelf["promotionInfo"][$curl]["entity"]["discount"];
 //        $ResponseData["is_pg"] = $dataSelf["promotionInfo"][$curl]["entity"]["isPg"];
 //        $ResponseData["is_coupon"] = $dataSelf["promotionInfo"][$curl]["entity"]["isCoupon"];
