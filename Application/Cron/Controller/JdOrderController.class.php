@@ -145,7 +145,7 @@ class JdOrderController extends Controller
             //订单列表
             foreach ($data as $key => $value) {
 
-                $user_tag = $value['positionId'];
+                $user_tag = $value['skuList'][0]['positionId'];
 //                $user_data = explode('_', $user_tag);
 //                if (empty($user_data)) {
 //                    break;
@@ -174,7 +174,7 @@ class JdOrderController extends Controller
                 echo 'uid:'.$user_tag.PHP_EOL;
                 $order_data = [
                     'date' => date('Y-m-d', ($order_time / 1000)),
-                    'uid' => ($user_tag>1000000000) ? ($user_tag/100) : $user_tag,
+                    'uid' => $uid,
                     'type' => $type, // 1自购 2分享
                     'order_id' => $order_id,
                     'order_type' => $order_type, //订单类型 1 单品订单 2:活动订单
