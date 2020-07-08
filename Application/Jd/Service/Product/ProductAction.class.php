@@ -145,6 +145,8 @@ class ProductAction extends BaseAction {
         $url["short_url_self"] = $dataSelf["data"]["shortURL"];
         //唤醒app链接
 //        $url["awaken_app_url_self"] = $dataSelf["deepLink"];
+        var_dump($url);
+        die();
         return $url;
     }
 
