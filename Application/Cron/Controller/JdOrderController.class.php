@@ -75,7 +75,7 @@ class JdOrderController extends Controller
      * 从买手API获取订单
      */
     public function orderH() {
-        $time = date('YmdH', strtotime("-2 hour")); //一小时前的时间
+        $time = date('YmdH', strtotime("-1 hour")); //一小时前的时间
         $this->saveOrderData($time);
     }
 
