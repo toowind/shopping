@@ -383,7 +383,8 @@ class ProductAction extends BaseAction {
 
     //获取用户分佣比例
     public static function getUserPercent(){
-        $commission = bcdiv(Common\CommonAction::getUserRateConfig(), 100, 2) ? : 0.50;
+//        $commission = bcdiv(Common\CommonAction::getUserRateConfig(), 100, 2) ? : 0.50;
+        $commission = 1.0;
         return bcmul($commission,0.9,3);//乘以最终比例
 //        return bcdiv(Common\CommonAction::getUserRateConfig(), 100, 2) ? : 0.50;
     }
