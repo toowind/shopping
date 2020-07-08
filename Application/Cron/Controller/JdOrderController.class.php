@@ -171,7 +171,7 @@ class JdOrderController extends Controller
                 $order_type = 1;
                 $finish_time = $value['finishTime'];
                 $order_time = $value['orderTime'];
-
+                echo $user_tag.PHP_EOL;
                 $order_data = [
                     'date' => date('Y-m-d', ($order_time / 1000)),
                     'uid' => ($user_tag>1000000000) ? ($user_tag/100) : $user_tag,
