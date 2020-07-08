@@ -112,35 +112,39 @@ class ProductAction extends BaseAction {
 //        $requestdDataSelf['skuId'] = $requestdData['skuId'] = $goods_id;
 //        $requestdData['userTag'] = $userTag.'_'.$device_type;
         $data = self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$requestdData);
-        var_dump($data);
-        die();
 
-        $requestdDataSelf['userTag'] = $userTag.'_self'.'_'.$device_type;
-        $dataSelf = json_decode(self::http_get(self::$url.'/goods/getGoodsPromotionDeepLink',$requestdDataSelf), true);
+        $requestdData['positionId'] = $GLOBALS["userId"]*100;
+        $dataSelf = self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$requestdData);
+
+
+//        var_dump($data);
+//        die();
+//
+//        $requestdDataSelf['userTag'] = $userTag.'_self'.'_'.$device_type;
+//        $dataSelf = json_decode(self::http_get(self::$url.'/goods/getGoodsPromotionDeepLink',$requestdDataSelf), true);
 
         $data = json_decode($data,true);
-        if($data["code"] !=200 || $dataSelf["code"] !=200){
-            if($data["code"] !=200){
-                Log::write(json_encode($data),'HTTP_ERROR_PDD');
-            }
-            if($dataSelf["code"] !=200){
-                Log::write(json_encode($dataSelf),'HTTP_ERROR_PDD');
-            }
+        if($data["code"] !=200){
+            Log::write(json_encode($data),'HTTP_ERROR_PDD');
             ApiException::throwException(ApiException::GOODS_INFO_ERROR);
         }
 
-        if(!isset($data["promotionUrl"]) || !isset($data["deepLink"]) || !isset($dataSelf["promotionUrl"]) || !isset($dataSelf["deepLink"])){
-            Log::write(json_encode($data),'HTTP_ERROR_PDD_SHORT_URL');
+        if($dataSelf["code"] !=200){
+            Log::write(json_encode($data),'HTTP_ERROR_PDD');
             ApiException::throwException(ApiException::GOODS_INFO_ERROR);
         }
-        $short_url = $data["promotionUrl"];
+//        if(!isset($data["promotionUrl"]) || !isset($data["deepLink"]) || !isset($dataSelf["promotionUrl"]) || !isset($dataSelf["deepLink"])){
+//            Log::write(json_encode($data),'HTTP_ERROR_PDD_SHORT_URL');
+//            ApiException::throwException(ApiException::GOODS_INFO_ERROR);
+//        }
+        $short_url = $data["data"]["shortURL"];
         $url["short_url"] = $short_url;
         //唤醒app链接
-        $url["awaken_app_url"] =$data["deepLink"];
+//        $url["awaken_app_url"] =$data["deepLink"];
 
-        $url["short_url_self"] = $dataSelf["promotionUrl"];
+        $url["short_url_self"] = $dataSelf["data"]["shortURL"];
         //唤醒app链接
-        $url["awaken_app_url_self"] = $dataSelf["deepLink"];
+//        $url["awaken_app_url_self"] = $dataSelf["deepLink"];
         return $url;
     }
 
