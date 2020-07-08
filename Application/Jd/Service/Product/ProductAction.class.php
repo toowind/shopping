@@ -124,6 +124,8 @@ class ProductAction extends BaseAction {
 //        $dataSelf = json_decode(self::http_get(self::$url.'/goods/getGoodsPromotionDeepLink',$requestdDataSelf), true);
 
         $data = json_decode($data,true);
+        $dataSelf = json_decode($dataSelf,true);
+
         if($data["code"] !=200){
             Log::write(json_encode($data),'HTTP_ERROR_PDD');
             ApiException::throwException(ApiException::GOODS_INFO_ERROR);
@@ -145,8 +147,6 @@ class ProductAction extends BaseAction {
         $url["short_url_self"] = $dataSelf["data"]["shortURL"];
         //唤醒app链接
 //        $url["awaken_app_url_self"] = $dataSelf["deepLink"];
-        var_dump($url);
-        die();
         return $url;
     }
 
