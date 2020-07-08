@@ -207,7 +207,7 @@ class ProductAction extends BaseAction {
             'apikey'=>self::$apikey,
             'materialId'=>$materialId,
             'unionId'=>self::$jdunionId,
-            'positionId'=> 15510155676
+            'positionId'=> $GLOBALS["userId"]
         );
 
         $cdata = json_decode(self::http_get(self::$ddxUrl.'/jd/by_unionid_promotion',$cparam, 1), true);
