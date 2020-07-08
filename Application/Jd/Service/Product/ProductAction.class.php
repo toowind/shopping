@@ -100,7 +100,7 @@ class ProductAction extends BaseAction {
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
         $requestdData['pid'] = 'android';
-        $requestdData['subUnionId'] = 'self';
+//        $requestdData['subUnionId'] = 'self';
 
 
 
