@@ -142,23 +142,24 @@ class JdOrderModel extends BaseModel
      */
     public function getUserRateConfig() {
 
-        DI::setShared("redis", function () {
-            $redisConf = C("redis");
-            return new Redis($redisConf);
-        });
-
-        $redis = DI::get("redis");
-        $result = $redis->get('fxk_user_rate_config');
-        if (empty($result) && $result !== 0) {
-            $res = M('system_config', 'fxk_', $this->db_config)->where(['menu_name' => 'user_rate_config'])->find();
-            $result = empty($res['value']) ? 0 : (int)trim($res['value'], '"');
-            if ($result < 0) {
-                $result = 0;
-            }
-
-            $redis->set('fxk_user_rate_config', $result, 600);
-        }
-
-        return (int)$result;
+//        DI::setShared("redis", function () {
+//            $redisConf = C("redis");
+//            return new Redis($redisConf);
+//        });
+//
+//        $redis = DI::get("redis");
+//        $result = $redis->get('fxk_user_rate_config');
+//        if (empty($result) && $result !== 0) {
+//            $res = M('system_config', 'fxk_', $this->db_config)->where(['menu_name' => 'user_rate_config'])->find();
+//            $result = empty($res['value']) ? 0 : (int)trim($res['value'], '"');
+//            if ($result < 0) {
+//                $result = 0;
+//            }
+//
+//            $redis->set('fxk_user_rate_config', $result, 600);
+//        }
+//
+//        return (int)$result;
+        return 100;
     }
 }

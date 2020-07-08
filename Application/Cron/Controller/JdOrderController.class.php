@@ -9,54 +9,56 @@ use Think\Controller;
 
 class JdOrderController extends Controller
 {
-    //买手API
-    private static $url = 'https://open.qqbuy.com/api';
+    //订单侠apikey
+    private static $apikey = 'ag3U6pwUP4UbylHm97OImTlZoR01BXtD';
+    //订单侠API
+    private static $url = 'http://api.tbk.dingdanxia.com';
     //分销客数据库配置
     private $db_config = [
         'DB_TYPE' => 'mysql', // 数据库类型
-        'DB_HOST' => 'rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com', // 服务器地址
+        'DB_HOST' => '127.0.0.1', // 服务器地址
         'DB_NAME' => 'shop_fxk', // 数据库名
-        'DB_USER' => 'shop_fxk', // 用户名
-        'DB_PWD' => 'RWEGRTEt3DFGrtHGJ5DFGwexF',  // 密码
+        'DB_USER' => 'root', // 用户名
+        'DB_PWD' => '123456',  // 密码
         'DB_PORT' => '3306', // 端口
         'DB_PREFIX' => 'fxk_', // 数据库表前缀
     ];
 
-    //获取调用买手API的token
-    private static function get_token() {
-        DI::setShared("redis", function () {
-            $redisConf = C("redis");
-            return new Redis($redisConf);
-        });
-
-        $redis = DI::get("redis");
-        $token = $redis->get('qqbuy:token');
-        if (!$token) {
-            $RequestTokenData = array("appKey" => "JyPDsz3D", "appSecret" => "7b1daa2cae5ba5b02af9611509790ce8");
-            $tokenData = self::http_get_notoken(self::$url . '/auth/getAccessTokenForApi', $RequestTokenData);
-            $rtokenData = json_decode($tokenData, true);
-            $token = $rtokenData["token"];
-            $token = $redis->set('qqbuy:token', $token, 36000);
-        }
-        return $token;
-    }
-    private static function http_get_notoken($url, array $data = array()) {
-        if (strpos($url, '?') === false) {
-            $url .= '?' . http_build_query($data);
-        } else {
-            $url .= '&' . http_build_query($data);
-        }
-        $curl = curl_init(); // 启动一个CURL会话
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  // 从证书中检查SSL加密算法是否存在
-        $tmpInfo = curl_exec($curl);
-        //关闭URL请求
-        curl_close($curl);
-        return $tmpInfo;
-    }
+//    //获取调用买手API的token
+//    private static function get_token() {
+//        DI::setShared("redis", function () {
+//            $redisConf = C("redis");
+//            return new Redis($redisConf);
+//        });
+//
+//        $redis = DI::get("redis");
+//        $token = $redis->get('qqbuy:token');
+//        if (!$token) {
+//            $RequestTokenData = array("appKey" => "JyPDsz3D", "appSecret" => "7b1daa2cae5ba5b02af9611509790ce8");
+//            $tokenData = self::http_get_notoken(self::$url . '/auth/getAccessTokenForApi', $RequestTokenData);
+//            $rtokenData = json_decode($tokenData, true);
+//            $token = $rtokenData["token"];
+//            $token = $redis->set('qqbuy:token', $token, 36000);
+//        }
+//        return $token;
+//    }
+//    private static function http_get_notoken($url, array $data = array()) {
+//        if (strpos($url, '?') === false) {
+//            $url .= '?' . http_build_query($data);
+//        } else {
+//            $url .= '&' . http_build_query($data);
+//        }
+//        $curl = curl_init(); // 启动一个CURL会话
+//        curl_setopt($curl, CURLOPT_URL, $url);
+//        curl_setopt($curl, CURLOPT_HEADER, 0);
+//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); // 跳过证书检查
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);  // 从证书中检查SSL加密算法是否存在
+//        $tmpInfo = curl_exec($curl);
+//        //关闭URL请求
+//        curl_close($curl);
+//        return $tmpInfo;
+//    }
 
 
     /**
@@ -110,11 +112,14 @@ class JdOrderController extends Controller
             $time = date('YmdH', strtotime("-1 hour")); //一小时前的时间
         }
 
-        $url = self::$url . '/order/queryOrders';
+        $url = self::$url . '/jd/order_details';
 
         $param = [
+            'apikey'=>self::$apikey,
             'time' => $time,
             'type' => $type,
+            'pageNo' => 1,
+            'pageSize' => 500,
         ];
         $res_data = self::http_get($url, $param);
 
@@ -127,7 +132,7 @@ class JdOrderController extends Controller
             $data = $res['data'];
         }
 
-        if ($data && $data['totalCount'] > 0 && count($data['orders'])) {
+        if ($data && count($data) > 0) {
 
             //获取后台配置的用户分佣比例
             $user_rate = CommonAction::getUserRateConfig();
@@ -137,30 +142,22 @@ class JdOrderController extends Controller
             $time = time();
 
             //订单列表
-            foreach ($data['orders'] as $key => $value) {
+            foreach ($data as $key => $value) {
 
-                $user_tag = $value['userTag'];
-                $user_data = explode('_', $user_tag);
-                if (empty($user_data)) {
-                    break;
-                }
+                $user_tag = $value['positionId'];
+//                $user_data = explode('_', $user_tag);
+//                if (empty($user_data)) {
+//                    break;
+//                }
 
-                $app_source = 1; // 1 ：中青安卓客户端； 2 ：中青IOS客户端
-                if (!empty($user_data[1]) && $user_data[1] == 'self') {
-                    $uid = $user_data[0];
+                $app_source = 3; // 1 ：中青安卓客户端； 2 ：中青IOS客户端 3:小程序
+                if ($user_tag>1000000000) {
+                    $uid = $user_tag/100;
                     $type = 1; //自购单
 
-                    if (!empty($user_data[2]) && $user_data[2] == 'ios') {
-                        $app_source = 2;
-                    }
-
                 } else {
-                    $uid = $user_data[0];
+                    $uid = $user_tag;
                     $type = 2; //分销单
-
-                    if (!empty($user_data[1]) && $user_data[1] == 'ios') {
-                        $app_source = 2;
-                    }
                 }
 
                 $validCode = $value['validCode'];
@@ -170,7 +167,7 @@ class JdOrderController extends Controller
                 }
 
                 $order_id = $value['orderId'];
-                $order_type = $value['orderType'];
+                $order_type = 1;
                 $finish_time = $value['finishTime'];
                 $order_time = $value['orderTime'];
 
@@ -198,7 +195,7 @@ class JdOrderController extends Controller
                     echo '->' . __LINE__ . '<-';
                     foreach ($value['skuList'] as $k => $v) {
 
-                        $cos_price = $v['cosPrice'] * 100;
+                        $cos_price = $v['estimateCosPrice'] * 100;
                         $goods_id = $v['skuId'];
                         $goods_name = $v['skuName'];
                         $goods_num = $v['skuNum'];
@@ -206,7 +203,7 @@ class JdOrderController extends Controller
                         $final_rate = $v['finalRate'];
                         $commission_rate = $v['commissionRate'];
                         $price = $v['price'] * 100;
-                        $commission = $v['commission'] * 100;
+                        $commission = $v['estimateFee'] * 100;
 
                         //按照佣金分配比例，得出用户和平台的佣金
                         $commission_data = $this->getCommission($commission, $commission_config['user']);
@@ -234,8 +231,8 @@ class JdOrderController extends Controller
                             'note_commission' => $cos_price * ($commission_rate * 0.01) * ($final_rate * 0.01),
 
                             'pop_id' => $value['popId'] ?: 0, //店铺ID
-                            'is_pg_order' => $v['isPgOrder'], //是否拼购订单
-                            'is_red_packet_order' => $v['isRedPacketOrder'], //是否使用红包订单
+//                            'is_pg_order' => $v['isPgOrder'], //是否拼购订单
+//                            'is_red_packet_order' => $v['isRedPacketOrder'], //是否使用红包订单
                         ];
 
                         if($validCode == 3){
@@ -318,7 +315,7 @@ class JdOrderController extends Controller
 
     //发送get请求
     private static function http_get($url, array $data = array(), $is_post = 0) {
-        $headers[] = "token: " . self::get_token();
+//        $headers[] = "token: " . self::get_token();
         if (!$is_post) {
             if (strpos($url, '?') === false) {
                 $url .= '?' . http_build_query($data);
