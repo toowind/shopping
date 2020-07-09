@@ -1971,7 +1971,7 @@ VALUES";
         $ResponseData["isCoupon"] = $goodsInfo["isCoupon"];
         $ResponseData["isPg"] = $goodsInfo["isPg"];
         $ResponseData["pingouPrice"] = $goodsInfo["pingouPrice"];
-        $ResponseData["discountPrice"] = ($goodsInfo["pingouPrice"]>0.00)? ($goodsInfo["pingouPrice"]-$coupon_discount) : $goodsInfo["discountPrice"];
+        $ResponseData["discountPrice"] = (intval($goodsInfo["pingouPrice"])>0)? ($goodsInfo["pingouPrice"]-$coupon_discount) : $goodsInfo["discountPrice"];
         $ResponseData["return_cash_total"] = $ResponseData["return_cash"] = bcmul($ResponseData["discountPrice"], $promotion_rate, 2);
 
         $ResponseData["comments"] = $goodsInfo["comments"];
