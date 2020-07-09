@@ -1122,7 +1122,7 @@ class ProductAction extends BaseAction {
 //            if(isset($paramData["page_size"]))   $RequestData["pageSize"] = 50;
                 $RequestData["pageIndex"] = $page;
                 $RequestData["pageSize"] = 50;
-                $RequestData["eliteId"] =  $x[$cid];
+                $RequestData["eliteId"] =  10;
                 $rdata = self::http_get(self::$ddxUrl.'/jd/query_jingfen_goods',$RequestData);
                 $data = json_decode($rdata,true);
 //        var_dump($data);
