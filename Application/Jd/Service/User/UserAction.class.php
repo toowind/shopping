@@ -183,7 +183,7 @@ class UserAction extends BaseAction
         $userRes = $jdUserModel->getUserDataByWechat($openid, $unionid);
         if ($userRes) {
             $params = [
-                'uid' => $userRes['uid'],
+                'uid' => $userRes['id'],
                 'nickname' => $userRes['nickname'],
                 'avatar' => $userRes['avatar'],
                 'channel' => 3,
