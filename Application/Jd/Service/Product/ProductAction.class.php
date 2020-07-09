@@ -1402,8 +1402,8 @@ VALUES";
             $ResponseData[$key]["pingouPrice"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : 0;
 //            $commission = isset($val["commissionInfo"]["commission"]) ? $val["commissionInfo"]["commission"] : 0;
 //            $ResponseData[$key]["return_cash"] = bcmul($commission,0.1, 2);
-//            $commission =  bcmul($ResponseData[$key]["discountPrice"], $promotion_rate, 2);
-            $commission = $val["commissionInfo"]["commission"];
+            $commission =  bcmul($ResponseData[$key]["discountPrice"], $promotion_rate, 2);
+//            $commission = $val["commissionInfo"]["commission"];
 
             $ResponseData[$key]["return_cash_total"] = $ResponseData[$key]["return_cash"] = $commission;
             $ResponseData[$key]["comments"] = isset($val["comments"]) ? $val["comments"] : 0;
