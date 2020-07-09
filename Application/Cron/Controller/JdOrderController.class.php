@@ -365,7 +365,7 @@ class JdOrderController extends Controller
         $end = date("Y-m-01", strtotime(" +1 month"));
 
         $jd_order_model = M('shop_order', 'fxk_', $this->db_config);
-        $user_model = M('user', 'fxk_', $this->db_config);
+        $user_model = M('jd_user', 'fxk_', $this->db_config);
         $user_money_log_model = M('user_money_log', 'fxk_', $this->db_config);
 //        $where['date'] = array('egt', $start); //大于等于
         $where['date'] = array('lt', $end); //小于

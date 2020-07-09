@@ -15,7 +15,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function getUserData($uid = 0) {
-        return M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->find();
+        return M('jd_user', 'fxk_', $this->db_config)->where(['id' => $uid])->find();
     }
 
     /**
@@ -24,7 +24,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function setUserData($data){
-        return M('user', 'fxk_', $this->db_config)->add($data);
+        return M('jd_user', 'fxk_', $this->db_config)->add($data);
     }
 
     /**
@@ -34,7 +34,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function updateData($uid = 0, $save = []) {
-        return M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->save($save);
+        return M('jd_user', 'fxk_', $this->db_config)->where(['id' => $uid])->save($save);
     }
 
     /**
@@ -43,7 +43,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function updateOrderShowTime($uid = 0) {
-        return M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->save(['order_show_time' => date('Y-m-d')]);
+        return M('jd_user', 'fxk_', $this->db_config)->where(['id' => $uid])->save(['order_show_time' => date('Y-m-d')]);
     }
 
     /**
@@ -57,7 +57,7 @@ class JdUserModel extends BaseModel
         $save = [
             'now_money' => 0, //全部取现
         ];
-        $m1 = M('user', 'fxk_', $this->db_config)->where(['id' => $uid])->save($save);
+        $m1 = M('jd_user', 'fxk_', $this->db_config)->where(['id' => $uid])->save($save);
 
         $install = [
             'uid' => $uid,
@@ -81,7 +81,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function getUserDataByWechat($openid = 0, $unionid = 0) {
-        return M('user', 'fxk_', $this->db_config)->where(['openid' => $openid, 'unionid' => $unionid])->find();
+        return M('jd_user', 'fxk_', $this->db_config)->where(['openid' => $openid, 'unionid' => $unionid])->find();
     }
 
     /**
@@ -90,7 +90,7 @@ class JdUserModel extends BaseModel
      * @return mixed
      */
     public function setUserDataByWechat($data){
-        return M('user', 'fxk_', $this->db_config)->add($data);
+        return M('jd_user', 'fxk_', $this->db_config)->add($data);
     }
 
 
