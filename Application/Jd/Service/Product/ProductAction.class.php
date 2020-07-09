@@ -1123,7 +1123,7 @@ class ProductAction extends BaseAction {
                 $RequestData["apikey"] = 'fEvqmZ71kw43vkjV0SBZvrhdMHPsIEnv';
                 $RequestData["pageIndex"] = $page;
                 $RequestData["pageSize"] = 1;
-                $RequestData["eliteId"] =  10;
+                $RequestData["eliteId"] =  $x[$cid];
                 $rdata = self::http_get(self::$ddxUrl.'/jd/query_jingfen_goods',$RequestData);
                 $data = json_decode($rdata,true);
 //        var_dump($data);
@@ -1131,9 +1131,7 @@ class ProductAction extends BaseAction {
                     Log::write($data,'ERROR');
                     return array();
                 }
-                var_dump($data);
-                die();
-                $goodsList = !empty($data["list"]) ? $data["list"] : array();
+                $goodsList = !empty($data["data"]) ? $data["data"] : array();
                 if(empty($goodsList)){
                     Redis::setCurIdx($cates[$curCateIdx], $idx+1);
                     Redis::setCurNum($curCateNum+1);
@@ -1150,24 +1148,29 @@ VALUES";
                         $bar_code = $item['skuId'];
                         $store_name = $item['skuName'];
                         $brand_name = $item['brandName'];
-                        $shop_id = $item['shopId'];
+                        $shop_id = $item['shopInfo']['shopId'];
 
-                        $image= $item['imgUrl'];
-                        $imageinfo= $item['imageInfo'];
+                        $image= $item['imageInfo']['imageList'][0]['url'];
+                        $imageinfo= json_encode($item['imageInfo']);
                         $cate_id = $catesName[$cid];
                         $cate_id_no = $cid;
                         $keyword= '';
-                        $ot_price= $item['price'];
-                        $price= $item['discountPrice'];
-                        $pingouPrice= $item['pingouPrice'];
+                        $ot_price= $item['priceInfo']['price'];
+                        $price= $item['priceInfo']['lowestPrice'];
+                        $pingouPrice= $item['pinGouInfo']['pingouPrice'];
 
 
-                        $coupon_discount= $item['discount'];
-                        $commission_share = $item['commissionShare'];
-                        $commission = $item['commission'];
-                        $is_pg= $item['isPg'];
-                        $is_coupon = $item['isCoupon'];
-                        $order_count_30days = $item['orderCount30days'];
+                        $couponInfo = $item['couponInfo']['couponList'];
+                        $ret = self::dealCoupon($couponInfo);
+
+                        $coupon_discount= $ret[1];
+                        $is_coupon = $ret[0];
+
+                        $commission_share = $item['commissionInfo']['commissionShare'];
+                        $commission = $item['commissionInfo']['commission'];
+                        $ctime = time()*1000;
+                        $is_pg= ($ctime>=$item['pinGouInfo']['pingouStartTime'] && $ctime<=$item['pinGouInfo']['pingouEndTime']);
+                        $order_count_30days = $item['inOrderCount30Days'];
                         $comments = $item['comments'];
                         $goods_comments_share = $item['goodCommentsShare'];
                         $is_show = 1;
@@ -1275,6 +1278,18 @@ VALUES";
 //        return $ResponseData;
 //    }
 
+    private static function dealCoupon($couponInfo){
+        if(!count($couponInfo)){
+            return [0,0];
+        }
+        $ctime = time()*1000;
+        foreach ($couponInfo as $item){
+            if($ctime>=$item['useStartTime'] && $ctime<=$item['useEndTime']){
+                return[1,$item['discount']];
+                break;
+            }
+        }
+    }
     //获取佣金率及秒杀商品
     public static function getCommissionRateAndSeckillGoodsList(){
 
