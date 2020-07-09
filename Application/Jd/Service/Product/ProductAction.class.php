@@ -1111,8 +1111,8 @@ class ProductAction extends BaseAction {
           $sidx =  $idx ? : 1;
           $sidx %= 10;
           $sidx +=1;
-          $start = ($sidx-1)*10+1;
-          $end = ($sidx-1)*10+10;
+          $start = ($sidx-1)*20+1;
+          $end = ($sidx-1)*20+20;
 
 //        foreach ($cates as $cid){
             for ($page=$start;$page<=$end;$page++){
@@ -1121,7 +1121,7 @@ class ProductAction extends BaseAction {
 //            //page_size 默认100
 //            if(isset($paramData["page_size"]))   $RequestData["pageSize"] = 50;
                 $RequestData["apikey"] = 'fEvqmZ71kw43vkjV0SBZvrhdMHPsIEnv';
-                $RequestData["pageIndex"] = 1;
+                $RequestData["pageIndex"] = $page;
                 $RequestData["pageSize"] = 50;
                 $RequestData["eliteId"] =  $x[$cid];
                 var_dump($RequestData);
