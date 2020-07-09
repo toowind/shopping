@@ -1158,7 +1158,7 @@ VALUES";
                         $keyword= '';
                         $ot_price= $item['priceInfo']['price'];
                         $price= $item['priceInfo']['lowestPrice'];
-                        $pingouPrice= $item['pinGouInfo']['pingouPrice'];
+                        $pingouPrice= $item['pinGouInfo']['pingouPrice'] ? $item['pinGouInfo']['pingouPrice'] : 0;
 
 
                         $couponInfo = $item['couponInfo']['couponList'];
@@ -1170,7 +1170,7 @@ VALUES";
                         $commission_share = $item['commissionInfo']['commissionShare'];
                         $commission = $item['commissionInfo']['commission'];
                         $ctime = time()*1000;
-                        $is_pg= ($ctime>=$item['pinGouInfo']['pingouStartTime'] && $ctime<=$item['pinGouInfo']['pingouEndTime']);
+                        $is_pg= ($ctime>=$item['pinGouInfo']['pingouStartTime'] && $ctime<=$item['pinGouInfo']['pingouEndTime']) ? 1 : 0;
                         $order_count_30days = $item['inOrderCount30Days'];
                         $comments = $item['comments'];
                         $goods_comments_share = $item['goodCommentsShare'];
