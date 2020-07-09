@@ -1377,7 +1377,8 @@ VALUES";
             $ResponseData[$key]["goods_thumbnail_url"] = isset($val["imageInfo"]["imageList"][0]["url"]) ? $val["imageInfo"]["imageList"][0]["url"] : "";
 
             //优惠券金额
-            $coupon_discount = isset($val["couponInfo"]["couponList"]["0"]["discount"]) ? $val["couponInfo"]["couponList"]["0"]["discount"] : 0;
+            $ret = self::dealCoupon($val["couponInfo"]["couponList"]);
+            $coupon_discount = $ret[1];
             $ResponseData[$key]["coupon_discount"] = $coupon_discount;
 
             //价格
@@ -1390,7 +1391,7 @@ VALUES";
             //京东佣金
             //单价  减去 优惠券
             $ResponseData[$key]["present_price"] = isset($val['pinGouInfo']['pingouPrice']) ? $val['pinGouInfo']['pingouPrice'] : ($min_group_price-$coupon_discount);
-            $ResponseData[$key]["isCoupon"] = isset($val["couponInfo"]["couponList"]) ? count($val["couponInfo"]["couponList"]) : 0;
+            $ResponseData[$key]["isCoupon"] = $ret[0];
             $ResponseData[$key]["isPg"] = isset($val["pinGouInfo"]["pingouPrice"]) ? ($val["pinGouInfo"]["pingouPrice"]>0) : 0;
             $ResponseData[$key]["discountPrice"] = isset($val['pinGouInfo']['pingouPrice']) ? $val['pinGouInfo']['pingouPrice'] : ($min_group_price-$coupon_discount);
             $ResponseData[$key]["pingouPrice"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : 0;
