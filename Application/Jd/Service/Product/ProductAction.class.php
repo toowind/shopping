@@ -1865,8 +1865,8 @@ VALUES";
                 return $ResponseData;
             }
         }else{
-            $sql = "select bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where bar_code='".$goodsId."' and source_id=1 order by id desc limit 1";
-            $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
+            $sql = "select bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where bar_code='".$goodsId."' limit 1";
+            $mysqli = mysqli_connect("127.0.0.1","root","123456","shop_fxk");
             if($mysqli){
                 $result = mysqli_query($mysqli, $sql);
                 $goodsInfo = mysqli_fetch_assoc($result);
