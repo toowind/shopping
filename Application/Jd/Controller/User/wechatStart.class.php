@@ -1,5 +1,5 @@
 <?php
-/* 用户信息*/
+/* 小程序静默授权*/
 
 namespace Jd\Controller\User;
 
