@@ -1895,7 +1895,6 @@ VALUES";
                 //优惠券价格
                 $coupon_discount = $goodsInfo["coupon_discount"];
                 $ResponseData["coupon_discount"] = $coupon_discount;
-                $ResponseData["return_cash_total"] = $ResponseData["return_cash"] = bcmul($min_group_price-$coupon_discount, $promotion_rate, 2);
                 $ResponseData["isCoupon"] = $goodsInfo["is_coupon"];
                 $ResponseData["isPg"] = $goodsInfo["is_pg"];
                 $ResponseData["pingouPrice"] = $goodsInfo["pingou_price"];
@@ -1905,6 +1904,8 @@ VALUES";
                     $discountPrice = $goodsInfo["pingou_price"]-$coupon_discount;
                 }
                 $ResponseData["discountPrice"] = $discountPrice;
+                $ResponseData["return_cash_total"] = $ResponseData["return_cash"] = bcmul($discountPrice, $promotion_rate, 2);
+
                 $ResponseData["comments"] = $goodsInfo["comments"];
                 $ResponseData["goodCommentsShare"] = $goodsInfo["goods_comments_share"].'%';
                 $ResponseData["orderCount30days"] = $goodsInfo["order_count_30days"];
