@@ -1968,11 +1968,12 @@ VALUES";
         //优惠券价格
         $coupon_discount = $goodsInfo["discount"];
         $ResponseData["coupon_discount"] = $coupon_discount;
-        $ResponseData["return_cash_total"] = $ResponseData["return_cash"] = $goodsInfo["commission"];
         $ResponseData["isCoupon"] = $goodsInfo["isCoupon"];
         $ResponseData["isPg"] = $goodsInfo["isPg"];
         $ResponseData["pingouPrice"] = $goodsInfo["pingouPrice"];
-        $ResponseData["discountPrice"] = $goodsInfo["discountPrice"];
+        $ResponseData["discountPrice"] = ($goodsInfo["pingouPrice"]>0.00)? ($goodsInfo["pingouPrice"]-$coupon_discount) : $goodsInfo["discountPrice"];
+        $ResponseData["return_cash_total"] = $ResponseData["return_cash"] = bcmul($ResponseData["discountPrice"], $promotion_rate, 2);
+
         $ResponseData["comments"] = $goodsInfo["comments"];
         $ResponseData["goodCommentsShare"] = $goodsInfo["goodCommentsShare"].'%';
         $ResponseData["orderCount30days"] = $goodsInfo["orderCount30days"];
