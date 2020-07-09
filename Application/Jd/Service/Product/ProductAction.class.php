@@ -1114,6 +1114,9 @@ class ProductAction extends BaseAction {
           $start = ($sidx-1)*20+1;
           $end = ($sidx-1)*20+20;
 
+          $start =1;
+          $end = 30;
+
 //        foreach ($cates as $cid){
             for ($page=$start;$page<=$end;$page++){
 //            //page默认1
@@ -1121,9 +1124,12 @@ class ProductAction extends BaseAction {
 //            //page_size 默认100
 //            if(isset($paramData["page_size"]))   $RequestData["pageSize"] = 50;
                 $RequestData["apikey"] = 'fEvqmZ71kw43vkjV0SBZvrhdMHPsIEnv';
+//                $RequestData["pageIndex"] = $page;
+//                $RequestData["pageSize"] = 50;
+//                $RequestData["eliteId"] =  $x[$cid];
                 $RequestData["pageIndex"] = $page;
                 $RequestData["pageSize"] = 50;
-                $RequestData["eliteId"] =  $x[$cid];
+                $RequestData["eliteId"] =  31;
                 var_dump($RequestData);
                 $rdata = self::http_get(self::$ddxUrl.'/jd/query_jingfen_goods',$RequestData);
                 $data = json_decode($rdata,true);
