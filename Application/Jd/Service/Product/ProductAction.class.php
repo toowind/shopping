@@ -1121,8 +1121,8 @@ class ProductAction extends BaseAction {
 //            //page_size 默认100
 //            if(isset($paramData["page_size"]))   $RequestData["pageSize"] = 50;
                 $RequestData["apikey"] = 'fEvqmZ71kw43vkjV0SBZvrhdMHPsIEnv';
-                $RequestData["pageIndex"] = $page;
-                $RequestData["pageSize"] = 1;
+                $RequestData["pageIndex"] = 1;
+                $RequestData["pageSize"] = 50;
                 $RequestData["eliteId"] =  $x[$cid];
                 var_dump($RequestData);
                 $rdata = self::http_get(self::$ddxUrl.'/jd/query_jingfen_goods',$RequestData);
