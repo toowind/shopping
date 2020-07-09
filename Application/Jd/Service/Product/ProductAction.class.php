@@ -1430,7 +1430,9 @@ VALUES";
                 //普通商品
                 $ResponseData[$key]["goods_type"] = 0;
             }
-            $ResponseData[$key]["commission_share"] = $val["commissionInfo"]["commissionShare"];
+            $ResponseData[$key]["source_commission_share"] = $val["commissionInfo"]["commissionShare"];
+            $ResponseData[$key]["source_commission"] = $val["commissionInfo"]["commission"];
+
         }
         return array_unique($ResponseData, SORT_REGULAR);
     }
