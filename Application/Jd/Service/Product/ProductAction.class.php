@@ -1147,7 +1147,7 @@ VALUES";
                     foreach ($goodsList as $item){
                         $source_id = 1;
                         $bar_code = $item['skuId'];
-                        $store_name = $item['skuName'];
+                        $store_name = addslashes(str_replace('）','】',str_replace('（','【',$item['skuName'])));
                         $brand_name = $item['brandName'];
                         $shop_id = $item['shopInfo']['shopId'];
 
