@@ -1291,12 +1291,17 @@ VALUES";
             return [0,0];
         }
         $ctime = time()*1000;
+        $isCoupon = 0;
+        $discount = 0;
         foreach ($couponInfo as $item){
             if($ctime>=$item['useStartTime'] && $ctime<=$item['useEndTime']){
-                return[1,$item['discount']];
-                break;
+                $isCoupon = 1;
+                if($item['discount']>$discount){
+                    $discount = $item['discount'];
+                }
             }
         }
+        return[$isCoupon,$discount];
     }
     //获取佣金率及秒杀商品
     public static function getCommissionRateAndSeckillGoodsList(){
