@@ -1179,7 +1179,7 @@ VALUES";
                     }
                     $len = strlen($sql);
                     $sql = substr($sql, 0, $len-1);
-                    echo $sql.PHP_EOL;
+//                    echo $sql.PHP_EOL;
                     $mysqli = mysqli_connect("127.0.0.1","root","123456","shop_fxk");
 //        $mysqli = mysqli_connect("127.0.0.1","root","","test");
                     if (!$mysqli) {
@@ -1188,6 +1188,7 @@ VALUES";
                     }
 //                    echo $sql.PHP_EOL;
                     $res = $mysqli->query($sql);
+                    echo 'done'.PHP_EOL;
                     mysqli_close($mysqli);
                     Redis::setCurIdx($cates[$curCateIdx], $idx+1);
                     Redis::setCurNum($curCateNum+1);
