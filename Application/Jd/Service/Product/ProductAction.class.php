@@ -1898,7 +1898,7 @@ VALUES";
                 $ResponseData["isCoupon"] = $goodsInfo["is_coupon"];
                 $ResponseData["isPg"] = $goodsInfo["is_pg"];
                 $ResponseData["pingouPrice"] = $goodsInfo["pingou_price"];
-                if(!$goodsInfo["pingou_price"]){
+                if($goodsInfo["pingou_price"]<=0.00){
                     $discountPrice = $min_group_price-$coupon_discount;
                 }else{
                     $discountPrice = (($min_group_price-$coupon_discount)>$goodsInfo["pingou_price"]) ? $goodsInfo["pingou_price"] : ($min_group_price-$coupon_discount);
