@@ -1389,14 +1389,14 @@ VALUES";
             $ResponseData[$key]["promotion_rate"] = $promotion_rate;
             //京东佣金
             //单价  减去 优惠券
-            $ResponseData[$key]["present_price"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : ($min_group_price-$coupon_discount);
+            $ResponseData[$key]["present_price"] = isset($val['priceInfo']['lowestPrice']) ? $val['priceInfo']['lowestPrice'] : ($min_group_price-$coupon_discount);
             $ResponseData[$key]["isCoupon"] = isset($val["couponInfo"]["couponList"]) ? count($val["couponInfo"]["couponList"]) : 0;
             $ResponseData[$key]["isPg"] = isset($val["pinGouInfo"]["pingouPrice"]) ? ($val["pinGouInfo"]["pingouPrice"]>0) : 0;
-            $ResponseData[$key]["discountPrice"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : ($min_group_price-$coupon_discount);
+            $ResponseData[$key]["discountPrice"] = isset($val['priceInfo']['lowestPrice']) ? $val['priceInfo']['lowestPrice'] : ($min_group_price-$coupon_discount);
             $ResponseData[$key]["pingouPrice"] = isset($val["pinGouInfo"]["pingouPrice"]) ? $val["pinGouInfo"]["pingouPrice"] : 0;
 //            $commission = isset($val["commissionInfo"]["commission"]) ? $val["commissionInfo"]["commission"] : 0;
 //            $ResponseData[$key]["return_cash"] = bcmul($commission,0.1, 2);
-            $commission =  bcmul($ResponseData[$key]["present_price"], $promotion_rate, 2);
+            $commission =  bcmul($ResponseData[$key]["discountPrice"], $promotion_rate, 2);
             $ResponseData[$key]["return_cash_total"] = $ResponseData[$key]["return_cash"] = $commission;
             $ResponseData[$key]["comments"] = isset($val["comments"]) ? $val["comments"] : 0;
             $ResponseData[$key]["goodCommentsShare"] = isset($val["goodCommentsShare"]) ? $val["goodCommentsShare"] : 0;
