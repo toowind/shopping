@@ -1111,8 +1111,8 @@ class ProductAction extends BaseAction {
           $sidx =  $idx ? : 1;
           $sidx %= 10;
           $sidx +=1;
-          $start = ($sidx-1)*30+1;
-          $end = ($sidx-1)*30+30;
+          $start = ($sidx-1)*10+1;
+          $end = ($sidx-1)*10+10;
 
 //        foreach ($cates as $cid){
             for ($page=$start;$page<=$end;$page++){
