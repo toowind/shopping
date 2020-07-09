@@ -74,6 +74,14 @@ class JdOrderController extends Controller
      * 脚本每小时执行一次
      * 从买手API获取订单
      */
+    public function orderCH() {
+        $time = date('YmdH', time()); //一小时前的时间
+        $this->saveOrderData($time);
+    }
+    /**
+     * 脚本每小时执行一次
+     * 从买手API获取订单
+     */
     public function orderH() {
         $time = date('YmdH', strtotime("-1 hour")); //一小时前的时间
         $this->saveOrderData($time);
