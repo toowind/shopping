@@ -1902,7 +1902,7 @@ VALUES";
                 if($goodsInfo["pingou_price"]<=0.00){
                     $discountPrice = $min_group_price-$coupon_discount;
                 }else{
-                    $discountPrice = (($min_group_price-$coupon_discount)>$goodsInfo["pingou_price"]) ? $goodsInfo["pingou_price"] : ($min_group_price-$coupon_discount);
+                    $discountPrice = $goodsInfo["pingou_price"]-$coupon_discount;
                 }
                 $ResponseData["discountPrice"] = $discountPrice;
                 $ResponseData["comments"] = $goodsInfo["comments"];
