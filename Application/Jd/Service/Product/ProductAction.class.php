@@ -1857,6 +1857,7 @@ VALUES";
 
         //查询缓存
         $goodsInfo = Redis::getProductInfo($key);
+        $goodsInfo = '';
         $checkResponseData = $ResponseData = json_decode($goodsInfo,true);
         if(!empty($goodsInfo) && !is_null($ResponseData['goods_id']) && count($ResponseData['goods_gallery_urls'])){
             $ResponseData["user_percent"] = self::getUserPercent();
