@@ -613,7 +613,7 @@ class ProductAction extends BaseAction {
 //        if($RequestData["cid3"]=='0_22' || $data["code"]!=200){
         if($data["code"]!=200){
             $sql = "select distinct bar_code,store_name,shop_id,brand_name,image,imginfo,cate_id_no,ot_price,price,pingou_price,coupon_discount,commission_share,commission,is_pg,is_coupon,order_count_30days,comments,goods_comments_share from fxk_store_product where cate_id_no='".$RequestData["cid3"]."' AND source_id=1 AND price<10 and commission_share>=20 order by order_count_30days desc,id desc limit {$start}, {$page_size}";
-            $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
+            $mysqli = mysqli_connect("127.0.0.1","root","123456","shop_fxk");
             if($mysqli){
                 $result = mysqli_query($mysqli, $sql);
                 $key = 0;
