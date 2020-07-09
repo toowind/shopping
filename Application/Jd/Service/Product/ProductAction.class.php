@@ -1179,7 +1179,7 @@ VALUES";
                     }
                     $len = strlen($sql);
                     $sql = substr($sql, 0, $len-1);
-//                    echo $sql;
+                    echo $sql.PHP_EOL;
                     $mysqli = mysqli_connect("127.0.0.1","root","123456","shop_fxk");
 //        $mysqli = mysqli_connect("127.0.0.1","root","","test");
                     if (!$mysqli) {
