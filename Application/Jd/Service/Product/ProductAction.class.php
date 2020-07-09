@@ -1397,6 +1397,7 @@ VALUES";
 //            $commission = isset($val["commissionInfo"]["commission"]) ? $val["commissionInfo"]["commission"] : 0;
 //            $ResponseData[$key]["return_cash"] = bcmul($commission,0.1, 2);
             $commission =  bcmul($ResponseData[$key]["discountPrice"], $promotion_rate, 2);
+
             $ResponseData[$key]["return_cash_total"] = $ResponseData[$key]["return_cash"] = $commission;
             $ResponseData[$key]["comments"] = isset($val["comments"]) ? $val["comments"] : 0;
             $ResponseData[$key]["goodCommentsShare"] = isset($val["goodCommentsShare"]) ? $val["goodCommentsShare"] : 0;
