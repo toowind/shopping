@@ -1120,6 +1120,7 @@ class ProductAction extends BaseAction {
 //            if(isset($paramData["page"])) $RequestData["pageIndex"] = $page;
 //            //page_size 默认100
 //            if(isset($paramData["page_size"]))   $RequestData["pageSize"] = 50;
+                $RequestData["apikey"] = 'fEvqmZ71kw43vkjV0SBZvrhdMHPsIEnv';
                 $RequestData["pageIndex"] = $page;
                 $RequestData["pageSize"] = 50;
                 $RequestData["eliteId"] =  10;
