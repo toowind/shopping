@@ -1087,6 +1087,16 @@ class ProductAction extends BaseAction {
     //查询商品列表----不区分平台
     public static function getGoodsListImport($paramData = array()){
         $cates = ['0_200','0_1','0_2','0_10','0_25','0_27','0_26','0_22'];
+        $x = [
+            "0_200"=>"31",//热卖
+            "0_1"=>"32",//精选
+            "0_2"=>"23",//大咖推荐
+            "0_10"=>"10",//9.9专区
+            "0_25"=>"25",//生活超市
+            "0_27"=>"27",//居家日用
+            "0_26"=>"26",//母婴
+            "0_22"=>"22",//爆品
+        ];
         $catesName = ['0_200'=>'热卖','0_1'=>'精选','0_2'=>'大咖推荐','0_10'=>'9.9专区','0_25'=>'生活超市','0_27'=>'居家日用','0_26'=>'母婴','0_22'=>'爆品'];
 
           $curCateNum = Redis::getCurNum();
@@ -1112,14 +1122,16 @@ class ProductAction extends BaseAction {
 //            if(isset($paramData["page_size"]))   $RequestData["pageSize"] = 50;
                 $RequestData["pageIndex"] = $page;
                 $RequestData["pageSize"] = 50;
-                $RequestData["cid3"] =  $cid;
-                $rdata = self::http_get(self::$url.'/goods/queryGoodsForApi',$RequestData);
+                $RequestData["eliteId"] =  $x[$cid];
+                $rdata = self::http_get(self::$ddxUrl.'/jd/query_jingfen_goods',$RequestData);
                 $data = json_decode($rdata,true);
 //        var_dump($data);
                 if($data["code"] != 200){
                     Log::write($data,'ERROR');
                     return array();
                 }
+                var_dump($data);
+                die();
                 $goodsList = !empty($data["list"]) ? $data["list"] : array();
                 if(empty($goodsList)){
                     Redis::setCurIdx($cates[$curCateIdx], $idx+1);
@@ -1163,7 +1175,7 @@ VALUES";
                     $len = strlen($sql);
                     $sql = substr($sql, 0, $len-1);
 //                    echo $sql;
-                    $mysqli = mysqli_connect("rm-2ze9f4jy87k3d58y8.mysql.rds.aliyuncs.com","shop_fxk","RWEGRTEt3DFGrtHGJ5DFGwexF","shop_fxk");
+                    $mysqli = mysqli_connect("127.0.0.1","root","123456","shop_fxk");
 //        $mysqli = mysqli_connect("127.0.0.1","root","","test");
                     if (!$mysqli) {
                         echo "mysql_contect_error " . mysqli_connect_error()."\n";
