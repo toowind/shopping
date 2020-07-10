@@ -1343,40 +1343,15 @@ VALUES";
     public static function ArrangementParam($goodsList,$otherList= 1){
         $ResponseData = array();
         $ext = [
-            "52828027298",
-            "63915247163",
-            "1974258248",
-            "65265695083",
-            "13485128555",
-            "25528177792",
-            "61544649036",
-            "100000100725",
-            "66618445017",
-            "67357125480",
-            "67807570244",
-            "31947482099",
-            "47861443831",
-            "50704836359",
-            "10777221157",
-            "63903330964",
-            "10749976331",
-            "29815324069",
-            "40722731944",
-            "10777776437",
-            "10787600023",
-            "22619871043",
-            "10777868876",
-            "40084407118",
-            "10785413374",
-            "57223673913",
+            "4333987",
         ];
         foreach($goodsList as $key=>$val){
 //            if(strpos($val["skuName"],'淫羊藿') !== false || strpos($val["skuName"],'补肾') !== false|| strpos($val["skuName"],'避孕') !== false|| strpos($val["skuName"],'伟哥') !== false|| strpos($val["skuName"],'性冷淡') !== false|| strpos($val["skuName"],'震动棒') !== false|| strpos($val["skuName"],'助勃') !== false|| strpos($val["skuName"],'延时喷剂') !== false|| strpos($val["skuName"],'飞机杯') !== false || strpos($val["skuName"],'情趣') !== false || strpos($val["skuName"],'自慰') !== false || strpos($val["skuName"],'房事') !== false || strpos($val["skuName"],'润滑') !== false || strpos($val["skuName"],'男用') !== false || strpos($val["skuName"],'女用') !== false || strpos($val["skuName"],'挑逗') !== false || strpos($val["skuName"],'阴茎') !== false || strpos($val["skuName"],'露毛') !== false){
 //                continue;
 //            }
-//            if(in_array($val["skuId"], $ext)){
-//                continue;
-//            }
+            if(in_array($val["skuId"], $ext)){
+                continue;
+            }
             $ResponseData[$key]["goods_id"] = isset($val["skuId"]) ? $val["skuId"] : 0;
             $ResponseData[$key]["goods_name"] = isset($val["skuName"]) ? $val["skuName"] : "";
             $ResponseData[$key]["goods_thumbnail_url"] = isset($val["imageInfo"]["imageList"][0]["url"]) ? $val["imageInfo"]["imageList"][0]["url"] : "";
