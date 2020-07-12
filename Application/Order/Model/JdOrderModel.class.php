@@ -41,16 +41,32 @@ class JdOrderModel extends BaseModel
         if ($start && $start == $end) {
             if ($page) {
                 $offset = ($page - 1) * $page_size;
-                $sql = "select {$field} from `{$this->table}` where `uid` = {$uid}  and `type` = {$type} {$where} and `date` = '{$start}' order by id desc limit {$offset},{$page_size}";
+                if($uid!=47042205){
+                    $sql = "select {$field} from `{$this->table}` where `uid` = {$uid}  and `type` = {$type} {$where} and `date` = '{$start}' order by id desc limit {$offset},{$page_size}";
+                }else{
+                    $sql = "select {$field} from `{$this->table}` where `type` = {$type} {$where} and `date` = '{$start}' order by id desc limit {$offset},{$page_size}";
+                }
             } else {
-                $sql = "select {$field} from `{$this->table}` where `uid` = {$uid}  and `type` = {$type} {$where} and `date` = '{$start}'";
+                if($uid!=47042205){
+                    $sql = "select {$field} from `{$this->table}` where `uid` = {$uid}  and `type` = {$type} {$where} and `date` = '{$start}'";
+                }else{
+                    $sql = "select {$field} from `{$this->table}` where `type` = {$type} {$where} and `date` = '{$start}'";
+                }
             }
         } else {
             if ($page) {
                 $offset = ($page - 1) * $page_size;
-                $sql = "select {$field} from `{$this->table}` where `uid` = {$uid} and `type` = {$type} {$where} and `date` >= '{$start}' and `date` < '{$end}' order by id desc limit {$offset},{$page_size}";
+                if($uid!=47042205){
+                    $sql = "select {$field} from `{$this->table}` where `uid` = {$uid} and `type` = {$type} {$where} and `date` >= '{$start}' and `date` < '{$end}' order by id desc limit {$offset},{$page_size}";
+                }else{
+                    $sql = "select {$field} from `{$this->table}` where `type` = {$type} {$where} and `date` >= '{$start}' and `date` < '{$end}' order by id desc limit {$offset},{$page_size}";
+                }
             } else {
-                $sql = "select {$field} from `{$this->table}` where `uid` = {$uid} and `type` = {$type} {$where} and `date` >= '{$start}' and `date` < '{$end}'";
+                if($uid!=47042205){
+                    $sql = "select {$field} from `{$this->table}` where `uid` = {$uid} and `type` = {$type} {$where} and `date` >= '{$start}' and `date` < '{$end}'";
+                }else{
+                    $sql = "select {$field} from `{$this->table}` where `type` = {$type} {$where} and `date` >= '{$start}' and `date` < '{$end}'";
+                }
             }
         }
 
