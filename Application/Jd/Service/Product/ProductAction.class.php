@@ -105,7 +105,7 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($data_coupon),'HTTP_ERROR_PDD');
             ApiException::throwException(ApiException::GOODS_INFO_ERROR);
         }
-        var_dump($data_coupon["data"]);
+        var_dump($data_coupon["data"]["couponInfo"]);
         if(is_array($data_coupon["data"]["couponInfo"]["couponList"]) && count($data_coupon["data"]["couponInfo"]["couponList"])){
             $ctime = time()*1000;
             $coupon = 0;
