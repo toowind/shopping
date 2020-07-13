@@ -120,7 +120,7 @@ class ProductAction extends BaseAction {
             }
         }
 
-        $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
+        $requestdData['materialId'] = urlencode('https://item.jd.com/'.$goods_id.'.html');
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
         $requestdData['couponUrl'] = $coupon_url;
@@ -265,7 +265,7 @@ class ProductAction extends BaseAction {
         $materialId = 'https://item.jd.com/'.$goods_id.'.html';
         $cparam = array(
             'apikey'=>self::$apikey,
-            'materialId'=>$materialId,
+            'materialId'=>urlencode($materialId),
             'unionId'=>self::$jdunionId,
             'ext1'=>$device_type,
             'couponUrl'=>$coupon_url,
