@@ -105,20 +105,19 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($data_coupon),'HTTP_ERROR_PDD');
             ApiException::throwException(ApiException::GOODS_INFO_ERROR);
         }
-        var_dump($data_coupon);
-        die();
         if(is_array($data_coupon["data"]["couponInfo"]["couponList"]) && count($data_coupon["data"]["couponInfo"]["couponList"])){
             $ctime = time()*1000;
             $coupon = 0;
             $coupon_url = "";
             foreach ($data_coupon["data"]["couponInfo"]["couponList"] as $item){
-                if($ctime>=$item["useStartTime"] && $ctime<=$item["useEndTime"]){
+                if($item["isBest"]){
                             $coupon = $item["discount"];
                             $coupon_url = $item["link"];
                 }
             }
         }
-
+        var_dump($coupon_url);
+        die();
         $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
