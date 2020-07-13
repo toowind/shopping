@@ -114,8 +114,6 @@ class ProductAction extends BaseAction {
                 }
             }
         }
-        var_dump($coupon_url);
-        die();
         $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
