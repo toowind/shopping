@@ -111,11 +111,9 @@ class ProductAction extends BaseAction {
             $coupon = 0;
             $coupon_url = "";
             foreach ($data_coupon["data"]["couponInfo"]["couponList"] as $item){
-                if($ctime>=$item["useStartTime"] && $ctime<=$item["useEndTime"]){
-                        if($item["discount"]>$coupon){
+                if($ctime>=$item["useStartTime"] && $ctime<=$item["useEndTime"] && 1==$item["isBest"]){
                             $coupon = $item["discount"];
                             $coupon_url = $item["link"];
-                        }
                 }
             }
         }
