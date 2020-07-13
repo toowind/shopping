@@ -109,6 +109,7 @@ class ProductAction extends BaseAction {
             $ctime = time()*1000;
             $coupon = 0;
             $coupon_url = "";
+            var_dump($data_coupon["data"]["couponInfo"]["couponList"]);
             foreach ($data_coupon["data"]["couponInfo"]["couponList"] as $item){
                 if($item["isBest"]){
                             $coupon = $item["discount"];
