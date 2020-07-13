@@ -81,7 +81,7 @@ class ProductAction extends BaseAction {
      * $type 1.自买链接  2.分享链接
      * 区分平台
      */
-    public static function purchaseUrl($goods_id){
+    public static function purchaseUrl($goods_id, $more=0){
 //        $device_type = $GLOBALS["userInfo"]["device_type"];
 //        if($device_type){
 //            if(strtolower($device_type)=='android'){
@@ -170,6 +170,8 @@ class ProductAction extends BaseAction {
 
         $url["short_url_self"] = $dataSelf["data"]["shortURL"];
         //唤醒app链接
+        $url["coupon_url"] = $coupon_url;
+
 //        $url["awaken_app_url_self"] = $dataSelf["deepLink"];
         return $url;
     }
@@ -207,6 +209,8 @@ class ProductAction extends BaseAction {
             //下单链接
             $purchaseUrl = self::purchaseUrl($goodsId);
             $myResponseData["purchaseUrl"] = $ResponseData["purchaseUrl"] = $purchaseUrl["short_url"];
+            $myResponseData["coupon_url"] = $ResponseData["coupon_url"] = $purchaseUrl["coupon_url"];
+
             $myResponseData["awaken_app_url"] = $ResponseData["awaken_app_url"] = $purchaseUrl["awaken_app_url"];
             $myResponseData["purchaseUrl_self"] = $ResponseData["purchaseUrl_self"] = $purchaseUrl["short_url_self"];
             $myResponseData["awaken_app_url_self"] = $ResponseData["awaken_app_url_self"] = $purchaseUrl["awaken_app_url_self"];
