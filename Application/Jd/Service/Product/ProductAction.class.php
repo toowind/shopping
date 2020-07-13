@@ -120,10 +120,10 @@ class ProductAction extends BaseAction {
             }
         }
 
-        $requestdData['materialId'] = urlencode('https://item.jd.com/'.$goods_id.'.html');
+        $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
-        $requestdData['couponUrl'] = $coupon_url;
+        $requestdData['couponUrl'] = urlencode($coupon_url);
 
 //        $requestdData['pid'] = 'android';
 //        $requestdData['subUnionId'] = 'self';
