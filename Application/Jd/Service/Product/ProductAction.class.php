@@ -105,11 +105,12 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($data_coupon),'HTTP_ERROR_PDD');
             ApiException::throwException(ApiException::GOODS_INFO_ERROR);
         }
-        if(is_array($data_coupon["couponInfo"]["couponList"]) && count($data_coupon["couponInfo"]["couponList"])){
+
+        if(is_array($data_coupon["data"]["couponInfo"]["couponList"]) && count($data_coupon["data"]["couponInfo"]["couponList"])){
             $ctime = time()*1000;
             $coupon = 0;
             $coupon_url = "";
-            foreach ($data_coupon["couponInfo"]["couponList"] as $item){
+            foreach ($data_coupon["data"]["couponInfo"]["couponList"] as $item){
                 if($ctime>=$item["useStartTime"] && $ctime<=$item["useEndTime"]){
                         if($item["discount"]>$coupon){
                             $coupon = $item["discount"];
@@ -251,12 +252,23 @@ class ProductAction extends BaseAction {
             Exception::throwException(Exception::HTTP_ERROR);
         }
         $goods_id = $data["data"];
+        $coupon_param = array(
+            'apikey'=>self::$apikey,
+            'skuIds'=>$goods_id,
+        );
+        $coupon_data = json_decode(self::http_get(self::$ddxUrl.'/jd/query_goods',$coupon_param, 1), true);
+        if($coupon_data["code"] != 200 ){
+            Log::write(json_encode($coupon_data),'HTTP_ERROR_PDD');
+            Exception::throwException(Exception::HTTP_ERROR);
+        }
+        $coupon_url = $coupon_data["data"]["couponInfo"]["couponList"][0]["link"];
         $materialId = 'https://item.jd.com/'.$goods_id.'.html';
         $cparam = array(
             'apikey'=>self::$apikey,
             'materialId'=>$materialId,
             'unionId'=>self::$jdunionId,
             'ext1'=>$device_type,
+            'couponUrl'=>$coupon_url,
             'positionId'=> $GLOBALS["userId"]
         );
 
