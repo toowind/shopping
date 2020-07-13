@@ -96,9 +96,34 @@ class ProductAction extends BaseAction {
 //        }
         $userTag = $GLOBALS["userId"];
         $requestdData['apikey'] = self::$apikey;
+        $requestdData['skuIds'] = $goods_id;
+
+        $data_coupon = self::http_get(self::$ddxUrl.'/jd/query_goods',$requestdData);
+        unset($requestdData['skuIds']);
+        $data_coupon = json_decode($data_coupon,true);
+        if($data_coupon["code"] !=200){
+            Log::write(json_encode($data_coupon),'HTTP_ERROR_PDD');
+            ApiException::throwException(ApiException::GOODS_INFO_ERROR);
+        }
+        if(is_array($data_coupon["couponInfo"]["couponList"]) && count($data_coupon["couponInfo"]["couponList"])){
+            $ctime = time()*1000;
+            $coupon = 0;
+            $coupon_url = "";
+            foreach ($data_coupon["couponInfo"]["couponList"] as $item){
+                if($ctime>=$item["useStartTime"] && $ctime<=$item["useEndTime"]){
+                        if($item["discount"]>$coupon){
+                            $coupon = $item["discount"];
+                            $coupon_url = $item["link"];
+                        }
+                }
+            }
+        }
+
         $requestdData['materialId'] = 'https://item.jd.com/'.$goods_id.'.html';
         $requestdData['unionId'] = self::$jdunionId;
         $requestdData['positionId'] = $userTag;
+        $requestdData['couponUrl'] = $coupon_url;
+
 //        $requestdData['pid'] = 'android';
 //        $requestdData['subUnionId'] = 'self';
 
