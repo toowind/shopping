@@ -1043,7 +1043,11 @@ class ProductAction extends BaseAction {
                     $keyword = $kw[1][0];
                 }
             }
-            $RequestData["keyword"] = $keyword;
+            if(is_numeric($keyword)){
+                $RequestData["skuIds"] = $keyword;
+            }else{
+                $RequestData["keyword"] = $keyword;
+            }
         }
 
         //page默认1
