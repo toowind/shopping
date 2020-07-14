@@ -259,6 +259,8 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($coupon_data),'HTTP_ERROR_PDD');
             Exception::throwException(Exception::HTTP_ERROR);
         }
+        var_dump($coupon_data);
+        die();
         $coupon_url = "";
         if(is_array($coupon_data["data"][0]["couponInfo"]["couponList"]) && count($coupon_data["data"][0]["couponInfo"]["couponList"])){
             foreach ($coupon_data["data"][0]["couponInfo"]["couponList"] as $item){
