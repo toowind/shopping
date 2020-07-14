@@ -259,7 +259,15 @@ class ProductAction extends BaseAction {
             Log::write(json_encode($coupon_data),'HTTP_ERROR_PDD');
             Exception::throwException(Exception::HTTP_ERROR);
         }
-        $coupon_url = $coupon_data["data"]["couponInfo"]["couponList"][0]["link"];
+        $coupon_url = "";
+        if(is_array($coupon_data["data"][0]["couponInfo"]["couponList"]) && count($coupon_data["data"][0]["couponInfo"]["couponList"])){
+            foreach ($coupon_data["data"][0]["couponInfo"]["couponList"] as $item){
+                if($item["isBest"]){
+                    $coupon_url = $item["link"];
+                }
+            }
+        }
+//        $coupon_url = $coupon_data["data"][0]["couponInfo"]["couponList"][0]["link"];
         $materialId = 'https://item.jd.com/'.$goods_id.'.html';
         $cparam = array(
             'apikey'=>self::$apikey,
