@@ -264,6 +264,7 @@ class ProductAction extends BaseAction {
             foreach ($coupon_data["data"][0]["couponInfo"]["couponList"] as $item){
                 if($item["isBest"]){
                     $coupon_url = $item["link"];
+                    $coupon = $item["discount"];
                 }
             }
         }
@@ -313,11 +314,11 @@ class ProductAction extends BaseAction {
         $ResponseData["goods_name"] = $skuName;
         $ResponseData["img"] = $imgUrl;
         $ResponseData["price"] = $unitPrice;
-//        $ResponseData["discount"] = $dataSelf["promotionInfo"][$curl]["entity"]["discount"];
+        $ResponseData["discount"] = $coupon;
 //        $ResponseData["is_pg"] = $dataSelf["promotionInfo"][$curl]["entity"]["isPg"];
 //        $ResponseData["is_coupon"] = $dataSelf["promotionInfo"][$curl]["entity"]["isCoupon"];
 //        $ResponseData["discountPrice"] = $dataSelf["promotionInfo"][$curl]["entity"]["discountPrice"];
-//        $ResponseData["return_cash"] = bcmul($dataSelf["promotionInfo"][$curl]["entity"]["commission"],self::getUserPercent(),2);
+        $ResponseData["return_cash"] = bcmul($coupon_data["data"][0]["commissionInfo"]["commission"],self::getUserPercent(),2);
 
 //        if ($ResponseData["is_pg"]){
 //            if($ResponseData["is_coupon"]){
