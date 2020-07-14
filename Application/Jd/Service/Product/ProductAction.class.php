@@ -274,7 +274,7 @@ class ProductAction extends BaseAction {
             'materialId'=>urlencode($materialId),
             'unionId'=>self::$jdunionId,
             'ext1'=>$device_type,
-            'couponUrl'=>$coupon_url,
+            'couponUrl'=>urlencode($coupon_url),
             'positionId'=> $GLOBALS["userId"]
         );
 
