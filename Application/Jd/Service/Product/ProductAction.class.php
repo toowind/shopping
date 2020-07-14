@@ -273,7 +273,6 @@ class ProductAction extends BaseAction {
             'apikey'=>self::$apikey,
             'materialId'=>urlencode($materialId),
             'unionId'=>self::$jdunionId,
-            'ext1'=>$device_type,
             'couponUrl'=>urlencode($coupon_url),
             'positionId'=> $GLOBALS["userId"]
         );
