@@ -318,7 +318,7 @@ class ProductAction extends BaseAction {
 //        $ResponseData["is_pg"] = $dataSelf["promotionInfo"][$curl]["entity"]["isPg"];
 //        $ResponseData["is_coupon"] = $dataSelf["promotionInfo"][$curl]["entity"]["isCoupon"];
 //        $ResponseData["discountPrice"] = $dataSelf["promotionInfo"][$curl]["entity"]["discountPrice"];
-        $ResponseData["return_cash"] = bcmul($coupon_data["data"][0]["commissionInfo"]["commission"],self::getUserPercent(),2);
+        $ResponseData["return_cash"] = bcmul($coupon_data["data"][0]["commissionInfo"]["commission"],self::getUserPercent()*0.9,2);
 
 //        if ($ResponseData["is_pg"]){
 //            if($ResponseData["is_coupon"]){
